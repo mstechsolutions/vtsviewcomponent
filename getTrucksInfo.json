@@ -1,0 +1,108 @@
+{
+	"reports" : [
+		{
+			"truckId" : "10",
+			"truckName" : "Maximus",
+			"customerInfo" :
+			{
+				"name" : "Mahesh Veerabathiran",
+				"phone" : "2018738981",
+				"address" : "4411 breezy bay cir",
+				"zipCode" : 23233,
+				"state" : "VA",
+				"country" : "USA"
+			},
+			"pickupContactInfo" : {
+				"name" : "Rajesh Veerabathiran",
+				"phone" : "9728003100",
+				"address" : "4411 breezy bay cir",
+				"zipCode" : 23233,
+				"state" : "TX",
+				"country" : "USA"
+			},
+			"dropoffContactInfo" : {
+				"name" : "Rajesh Veerabathiran",
+				"phone" : "9728003100",
+				"address" : "4411 breezy bay cir",
+				"zipCode" : 23233,
+				"state" : "TX",
+				"country" : "USA"
+			},
+			"orderDate" : "2016-08-15",
+			"pickupDate" : "2016-09-01",
+			"dropoffDate" : "2016-09-05",
+			"paymentMode" : "COD",
+			"expectedMiles" : 600,
+			"cost" : 1000.00,
+			"expense" : null,
+			"vehicles" : [
+				{
+					"vin" : "1Z345ABC8900754EDC",
+					"make" : "Honda",
+					"model" : "Accord",
+					"year" : 2012
+				},
+				{
+					"vin" : "1Z0000000E00JGB12X",
+					"make" : "Toyata",
+					"model" : "Camry",
+					"year" : 2005
+				}
+
+			]
+			
+		},
+		{
+			"truckId" : "20",
+			"truckName" : "Goldberg",
+			"customerInfo" :
+			{
+				"name" : "Mahesh Veerabathiran",
+				"phone" : "2018738981",
+				"address" : "4411 breezy bay cir",
+				"zipCode" : 23233,
+				"state" : "VA",
+				"country" : "USA"
+			},
+			"pickupContactInfo" : {
+				"name" : "Rajesh Veerabathiran",
+				"phone" : "9728003100",
+				"address" : "4411 breezy bay cir",
+				"zipCode" : 23233,
+				"state" : "TX",
+				"country" : "USA"
+			},
+			"dropoffContactInfo" : {
+				"name" : "Rajesh Veerabathiran",
+				"phone" : "9728003100",
+				"address" : "4411 breezy bay cir",
+				"zipCode" : 23233,
+				"state" : "TX",
+				"country" : "USA"
+			},
+			"orderDate" : "2016-08-15",
+			"pickupDate" : "2016-09-01",
+			"dropoffDate" : "2016-09-05",
+			"paymentMode" : "COD",
+			"expectedMiles" : 600,
+			"cost" : 1000.00,
+			"expense" : null,
+			"vehicles" : [
+				{
+					"vin" : "1Z345ABC8900754EDC",
+					"make" : "Honda",
+					"model" : "Accord",
+					"year" : 2012
+				},
+				{
+					"vin" : "1Z0000000E00JGB12X",
+					"make" : "Toyata",
+					"model" : "Camry",
+					"year" : 2005
+				}
+
+			]
+			
+		}
+	]
+}

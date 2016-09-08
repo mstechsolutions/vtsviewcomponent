@@ -17,3 +17,12 @@ $http({
 // "http://localhost:8080/vts/reports"
 // url: "http://www.w3schools.com/angular/customers.php",
 
+
+   // $http.get("getTrucksInfo.json")
+ //    .success(
+ //      function(data) {
+ //        $scope.response=data.reports
+ //      }
+ //    ).error(function(error){
+ //      $scope.error = error;
+ //    });

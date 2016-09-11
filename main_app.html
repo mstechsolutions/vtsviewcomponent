@@ -62,14 +62,15 @@
                             <th ng-repeat="x in gridHeaders">{{x}}</th>
                         </tr>
                         <tr ng-repeat="order in response">
-                            <td>{{ order.truckId }}</td>
+                            <!-- <td>{{ order.truckId }}</td> -->
                             <td>{{ order.truckName }}</td>
                             <td>{{ order.customerInfo.name }}</td>
                             <td>{{ order.customerInfo.phone }}</td>
-                            <td>{{ order.pickupContactInfo.state }}</td>
-                            <td>{{ order.pickupContactInfo.zipCode }}</td>
-                            <td>{{ order.dropoffContactInfo.state }}</td>
-                            <td>{{ order.dropoffContactInfo.zipCode }}</td>
+                            <td>{{ order.orderDate | date:'MM/dd/yyyy' }}</td>
+                            <td>{{ order.pickupDate | date:'MM/dd/yyyy' }}</td>
+                            <td>{{ order.pickupContactInfo.state + ", " + order.pickupContactInfo.zipCode}}</td>
+                            <td>{{ order.dropoffDate | date:'MM/dd/yyyy' }}</td>
+                            <td>{{ order.dropoffContactInfo.state + ", " + order.dropoffContactInfo.zipCode  }}</td>
                             <td>{{ order.paymentMode }}</td>
                             <td>{{ order.expectedMiles }}</td>
                             <td>{{ order.expense }}</td>
@@ -112,32 +113,32 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-4" for="customerContact">Customer Contact</label>
                                     <div class="col-sm-8"> 
-                                        <input type="text" class="form-control" id="customerContact" placeholder="Enter Customer contact number">
+                                        <input type="text" class="form-control" id="customerContact" ng-model="customerContact" placeholder="Enter Customer contact number" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4" for="pickupDate">Pickup Date</label>
                                     <div class="col-sm-8"> 
-                                        <input type="date" class="form-control" id="pickupDate" />
+                                        <input type="date" class="form-control" id="pickupDate" ng-model="pickupDate" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4" for="dropoffDate">Dropoff Date</label>
                                     <div class="col-sm-8"> 
-                                        <input type="date" class="form-control" id="dropoffDate" />
+                                        <input type="date" class="form-control" id="dropoffDate" ng-model="dropoffDate" />
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="control-label col-sm-4" for="expectedMiles">Expected Miles</label>
                                     <div class="col-sm-8"> 
-                                        <input type="text" class="form-control" id="expectedMiles" placeholder="Enter Expected Miles" />
+                                        <input type="text" class="form-control" id="expectedMiles" ng-model="expectedMiles" placeholder="Enter Expected Miles" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4" for="cost">Cost</label>
                                     <div class="col-sm-8"> 
-                                        <input type="text" class="form-control" id="cost" placeholder="Enter Cost"/>
+                                        <input type="text" class="form-control" id="cost" placeholder="Enter Cost" ng-model="cost" />
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -184,19 +185,19 @@
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="customerCity">City</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="customerCity" placeholder="Enter Customer City" />
+                                                    <input type="text" class="form-control" id="customerCity" placeholder="Enter Customer City" ng-model="customerCity" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="customerState">State</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="customerState" placeholder="Enter Customer State" />
+                                                    <input type="text" class="form-control" id="customerState" placeholder="Enter Customer State" ng-model="customerState" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="customerZipCode">Zipcode</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="customerZipCode" placeholder="Enter Customer Zipcode" />
+                                                    <input type="text" class="form-control" id="customerZipCode" placeholder="Enter Customer Zipcode" ng-model="customerZipCode" />
                                                 </div>
                                             </div>
                                         </div>
@@ -228,19 +229,19 @@
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="pickupCity">City</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="pickupCity" placeholder="Enter Pickup City">
+                                                    <input type="text" class="form-control" id="pickupCity" placeholder="Enter Pickup City" ng-model="pickupCity" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="pickupState">State</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="pickupState" placeholder="Enter Pickup State">
+                                                    <input type="text" class="form-control" id="pickupState" placeholder="Enter Pickup State" ng-model="pickupState" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="pickupZipCode">Zipcode</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="pickupZipCode" placeholder="Enter Pickup Zipcode">
+                                                    <input type="text" class="form-control" id="pickupZipCode" placeholder="Enter Pickup Zipcode" ng-model="pickupZipCode" />
                                                 </div>
                                             </div>
                                             
@@ -268,19 +269,19 @@
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="dropoffCity">City</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="dropoffCity" placeholder="Enter Dropoff City">
+                                                    <input type="text" class="form-control" id="dropoffCity" placeholder="Enter Dropoff City" ng-model="dropoffCity" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="dropoffState">State</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="dropoffState" placeholder="Enter Dropoff State">
+                                                    <input type="text" class="form-control" id="dropoffState" placeholder="Enter Dropoff State" ng-model="dropoffState" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4" for="dropoffZipCode">Zipcode</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="dropoffZipCode" placeholder="Enter Dropoff Zipcode">
+                                                    <input type="text" class="form-control" id="dropoffZipCode" placeholder="Enter Dropoff Zipcode" ng-model="dropoffZipCode" />
                                                 </div>
                                             </div>
                                         </div>
@@ -337,12 +338,13 @@
                                 <button id="addMoreVehicle" type="button" class="btn btn-info btn-sm" ng-click="addMoreVehicle()">Add Vehicle</button>
                             </div>
                         </div> <!--End of Primary tab content-->
-                    </form>
+                    
                     <div id="actionBar">
                         <button id="nextOrderButton" type="button" class="btn btn-info btn-sm">Back</button>
                         <button id="prevOrderButton" type="button" class="btn btn-info btn-sm">Next</button>
                         <button type="submit" id="addOrderButton" class="btn btn-info btn-sm">Submit</button>
-                    </div>   
+                    </div>
+                    </form>   
                 </div> <!--End of Modal content-->
                  
               </div>

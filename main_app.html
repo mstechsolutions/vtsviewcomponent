@@ -290,19 +290,29 @@
                             <div id="vehicleInfo" class="tab-pane fade">
                                 <table class="table table-striped">
                                     <tr>
+                                        <th>VIN</th>
                                         <th>Make</th>
                                         <th>Model</th>
                                         <th>Year</th>
+
                                     </tr>
                                     <tr ng-repeat="vehicle in vehicles">
+                                        <td>{{ vehicle.vin }}</td>
                                         <td>{{ vehicle.make }}</td>
                                         <td>{{ vehicle.model }}</td>
                                         <td>{{ vehicle.year }}</td>
+
                                     </tr>
                                 </table>
                                 <p style="text-align:center" ng-show="vehicles.length <= 0">No vehicles added.</p>
                                 <div class="panel panel-default">
                                     <div class="panel-heading">Add Vehicle</div>
+                                    <div class="form-group">
+                                        <label class="control-label col-sm-3" for="vin">VIN</label>
+                                        <div class="col-sm-8"> 
+                                            <input type="text" class="form-control" id="vin" placeholder="Enter VIN" ng-model="vin">
+                                        </div>
+                                    </div>
                                     <div class="form-group">
                                         <label class="control-label col-sm-3" for="make">Make</label>
                                         <div class="col-sm-8"> 
@@ -321,6 +331,7 @@
                                             <input type="text" class="form-control" id="year" placeholder="Enter Year" ng-model="year">
                                         </div>
                                     </div>
+
                                 </div>
                                 
                                 <button id="addMoreVehicle" type="button" class="btn btn-info btn-sm" ng-click="addMoreVehicle()">Add Vehicle</button>

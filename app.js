@@ -36,11 +36,13 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     vehicle.make = $scope.make;
     vehicle.model = $scope.model;
     vehicle.year = $scope.year;
+    vehicle.vin = $scope.vin;
     $scope.vehicles.push(vehicle);
 
     $scope.make = "";
     $scope.model = "";
     $scope.year = "";
+    $scope.vin = "";
   }
 
   $scope.response = null;

@@ -54,15 +54,59 @@
                 </div> -->
 
                 <!-- <div class="col-sm-8 text-left"> -->
-                <div>
-                    <button id="addOrder" type="button" class="btn btn-info btn-md" data-toggle="modal" data-target="#myModal">Add order</button>
 
-                    <table class="table table-striped">
+                <!--truck summary-->
+                <!-- <div style="height:10%">
+                    <table class="table table-striped ">
+                        <tr>
+                            <th ng-repeat="x in tripSummaryHeaders">{{x}}</th>
+                        </tr>
+                        <tr ng-repeat="trip in tripLogs" >
+                            <td>{{ trip.tripId }}</td>
+                            <td>{{ trip.driverId1 + "," + trip.driverId2 }}</td>
+                            <td>{{ trip.startDate }}</td>
+                            <td>{{ trip.endDate }}</td>
+                            <td>{{ trip.startingMiles }}</td>
+                            <td>{{ trip.endingMiles }}</td>
+                            <td>{{ trip.gasExpense }}</td>
+                            <td>{{ trip.tollExpense }}</td>
+                            <td>{{ trip.maintenanceExpense }}</td>
+                            <td>{{ trip.miscExpense }}</td>
+                        </tr>
+                        
+                    </table>
+
+                </div> -->
+
+                
+
+                <!-- Orders container -->
+                <div>
+                    <button id="addOrder" type="button" class="btn btn-info btn-md" data-toggle="modal" data-target="#myModal" ng-click="onAddOrderClick()" >Add order</button>
+
+                    <div>
+                        <label>Truck</label>
+                            <select id="truckList" ng-model="selectedTruckFilter" ng-options="truck.display for truck in truckListFilter">
+                            </select>
+                        </label>
+                        <label>Payment Mode</label>
+                            <select id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedPaymentModeFilter">
+                            </select>
+                        </label>
+                    </div>
+                    
+
+                    <table class="table table-striped" ng-init="index=0">
                         <tr>
                             <th ng-repeat="x in gridHeaders">{{x}}</th>
                         </tr>
-                        <tr ng-repeat="order in response">
+                        <tr ng-repeat="order in response | filter:selectedTruckFilter.name | filter:selectedPaymentModeFilter">
                             <!-- <td>{{ order.truckId }}</td> -->
+                            <td>
+                                <input type="radio" name="orderDetailSelection" ng-model="$parent.orderDetailSelection" ng-change="orderSelected($event)" ng-value="order">
+                                <!-- {{order.truckName}} -->
+                                </input>
+                            </td>
                             <td>{{ order.truckName }}</td>
                             <td>{{ order.customerInfo.name }}</td>
                             <td>{{ order.customerInfo.phone }}</td>
@@ -78,8 +122,74 @@
                         </tr>
                     </table>
                 </div>
-            </div>    
                 
+                <div ng-class="orderDetailToggle">
+                    <div class="panel-heading">Order Details</div>
+                    <div class="row" >
+                        <div class="col-sm-4" style="padding-left:20px" >
+                            <div>Customer details</div>
+                            <div class="row">
+                                <label class="col-sm-4" >Contact name</label>
+                                <label class="col-sm-1" >: </label>
+                                <label class="col-sm-6" >{{selectedOrder.customerInfo.name}}</label>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-4" >Address</label>
+                                <label class="col-sm-1" >: </label>
+                                <label class="col-sm-6" >{{selectedOrder.customerInfo.address + ", " +
+                                selectedOrder.customerInfo.state + ", " +
+                                selectedOrder.customerInfo.country + ", " +
+                                selectedOrder.customerInfo.zipCode }}</label>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-4" >Contact number</label>
+                                <label class="col-sm-1" >: </label>
+                                <label class="col-sm-6" >{{selectedOrder.customerInfo.phone}}</label>
+                            </div>
+                            
+                        </div>
+                        <div class="col-sm-4">
+                            <div>Pickup details</div>
+                            <div class="row">
+                                <label class="col-sm-4" >Contact name</label>
+                                <label class="col-sm-1" >: </label>
+                                <label class="col-sm-6" >2018738981</label>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-4" >Address</label>
+                                <label class="col-sm-1" >: </label>
+                                <label class="col-sm-6" >4411 breezy bay cir, Apt 305, Henrico, VA 23233</label>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-4" >Contact number</label>
+                                <label class="col-sm-1" >: </label>
+                                <label class="col-sm-6" >2018738981</label>
+                            </div>
+                            
+                        </div>    
+                        <div class="col-sm-4" >
+                            <div>Dropoff details</div>
+                            <div class="row">
+                                <label class="col-sm-4" >Contact name</label>
+                                <label class="col-sm-1" >: </label>
+                                <label class="col-sm-6" >2018738981</label>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-4" >Address</label>
+                                <label class="col-sm-1" >: </label>
+                                <label class="col-sm-6" >4411 breezy bay cir, Apt 305, Henrico, VA 23233</label>
+                            </div>
+                            <div class="row">
+                                <label class="col-sm-4" >Contact number</label>
+                                <label class="col-sm-1" >: </label>
+                                <label class="col-sm-6" >2018738981</label>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>    
+            
 
 
             <!-- Modal -->
@@ -91,63 +201,85 @@
                     <form class="form-horizontal" ng-submit="addOrderSubmit()">
                         <ul class="nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#primaryInfo">Primary</a></li>
-                            <li><a data-toggle="tab" href="#addressInfo">Address</a></li>
-                            <li><a data-toggle="tab" href="#vehicleInfo">Vehicle</a></li>
+                            <li><a data-toggle="tab" href="#addressInfo" ng-show="addModeEnabled">Address</a></li>
+                            <li><a data-toggle="tab" href="#vehicleInfo" ng-show="addModeEnabled">Vehicle</a></li>
                         </ul>
                         <div id="intakeTabContent" class="tab-content">
                             <div id="primaryInfo" class="tab-pane fade in active">
                                 <div class="form-group">
-                                    <label class="control-label col-sm-4 for="truckList">Truck</label>
+                                    <label class="control-label col-sm-4 input-sm" for="orderId">Order Id</label>
                                     <div class="col-sm-8">
-                                        <select class="form-control" id="truckList" ng-model="selectedTruck" ng-options="truck.name for truck in truckList">
+                                        <input type="text" class="form-control input-sm" ng-model="orderId" id="orderId" placeholder="Enter Order Id" ng-disabled="true">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label col-sm-4  input-sm" for="truckList">Truck</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control input-sm" id="truckList" ng-model="selectedTruck" ng-options="truck.name for truck in truckList">
                                             <!-- <option ng-repeat="truck in truckList">{{truck.name}}</option> -->
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-sm-4" for="customerName">Customer Name</label>
+                                    <label class="control-label col-sm-4 input-sm" for="orderStatus">Order status</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control" ng-model="customerName" id="customerName" placeholder="Enter Customer Name">
+                                        <select class="form-control input-sm" id="orderStatus" ng-options="orderStatus for orderStatus in orderStatusList" ng-model="selectedOrderStatus">
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-sm-4" for="customerContact">Customer Contact</label>
-                                    <div class="col-sm-8"> 
-                                        <input type="text" class="form-control" id="customerContact" ng-model="customerContact" placeholder="Enter Customer contact number" />
+                                    <label class="control-label col-sm-4 input-sm" for="customerName">Customer Name</label>
+                                    <div class="col-sm-8">
+                                        <input type="text" class="form-control input-sm" ng-model="selectedOrder.customerInfo.name" id="customerName" placeholder="Enter Customer Name">
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-sm-4" for="pickupDate">Pickup Date</label>
+                                    <label class="control-label col-sm-4 input-sm" for="customerContact">Customer Contact</label>
                                     <div class="col-sm-8"> 
-                                        <input type="date" class="form-control" id="pickupDate" ng-model="pickupDate" />
+                                        <input type="text" class="form-control input-sm" id="customerContact" ng-model="customerContact" placeholder="Enter Customer contact number" />
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-sm-4" for="dropoffDate">Dropoff Date</label>
+                                    <label class="control-label col-sm-4  input-sm" for="pickupDate">Pickup Date</label>
                                     <div class="col-sm-8"> 
-                                        <input type="date" class="form-control" id="dropoffDate" ng-model="dropoffDate" />
+                                        <input type="date" class="form-control  input-sm" id="pickupDate" ng-model="pickupDate" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-4 input-sm" for="dropoffDate">Dropoff Date</label>
+                                    <div class="col-sm-8"> 
+                                        <input type="date" class="form-control  input-sm" id="dropoffDate" ng-model="dropoffDate" />
                                     </div>
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="control-label col-sm-4" for="expectedMiles">Expected Miles</label>
+                                    <label class="control-label col-sm-4 input-sm" for="expectedMiles">Expected Miles</label>
                                     <div class="col-sm-8"> 
-                                        <input type="text" class="form-control" id="expectedMiles" ng-model="expectedMiles" placeholder="Enter Expected Miles" />
+                                        <input type="text" class="form-control input-sm" id="expectedMiles" ng-model="expectedMiles" placeholder="Enter Expected Miles" />
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-sm-4" for="cost">Cost</label>
+                                    <label class="control-label col-sm-4 input-sm" for="cost">Service fee</label>
                                     <div class="col-sm-8"> 
-                                        <input type="text" class="form-control" id="cost" placeholder="Enter Cost" ng-model="cost" />
+                                        <input type="text" class="form-control input-sm" id="cost" placeholder="Enter Service fee" ng-model="cost" />
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-sm-4 for="paymentModeList">Payment Mode</label>
+                                    <label class="control-label col-sm-4 input-sm" for="paymentModeList">Payment Mode</label>
                                     <div class="col-sm-8">
-                                        <select class="form-control" id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedPaymentMode">
+                                        <select class="form-control input-sm" id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedPaymentMode">
                                         </select>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="control-label col-sm-4 input-sm" for="paidStatus">Paid status</label>
+                                    <div class="col-sm-8">
+                                        <select class="form-control input-sm" id="paidStatus" ng-options="paidStatus for paidStatus in paidStatusList" ng-model="selectedPaidStatus">
+                                        </select>
+                                    </div>
+                                </div>
+                                
                                 <!-- <div class="form-group"> 
                                     <div class="col-sm-offset-2 col-sm-10">
                                         <div class="checkbox">
@@ -166,38 +298,38 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
-                                                <label data-toggle="collapse" href="#customerContact">Customer contact</label>
+                                                <label class="input-sm" data-toggle="collapse" href="#customerContact">Customer contact</label>
                                             </h4>
                                         </div>
                                         <div id="customerContact" class="panel-collapse collapse in">
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="customerAddressLine1">Address Line 1</label>
+                                                <label class="control-label col-sm-4  input-sm" for="customerAddressLine1">Address Line 1</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="customerAddressLine1" placeholder="Enter Customer Address Line 1" />
+                                                    <input type="text" class="form-control  input-sm" id="customerAddressLine1" placeholder="Enter Customer Address Line 1" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="customerAddressLine2">Address Line 2</label>
+                                                <label class="control-label col-sm-4 input-sm" for="customerAddressLine2">Address Line 2</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="customerAddressLine2" placeholder="Enter Customer Address Line 2" />
+                                                    <input type="text" class="form-control input-sm" id="customerAddressLine2" placeholder="Enter Customer Address Line 2" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="customerCity">City</label>
+                                                <label class="control-label col-sm-4 input-sm" for="customerCity">City</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="customerCity" placeholder="Enter Customer City" ng-model="customerCity" />
+                                                    <input type="text" class="form-control input-sm" id="customerCity" placeholder="Enter Customer City" ng-model="customerCity" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="customerState">State</label>
+                                                <label class="control-label col-sm-4 input-sm" for="customerState">State</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="customerState" placeholder="Enter Customer State" ng-model="customerState" />
+                                                    <input type="text" class="form-control input-sm" id="customerState" placeholder="Enter Customer State" ng-model="customerState" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="customerZipCode">Zipcode</label>
+                                                <label class="control-label col-sm-4 input-sm" for="customerZipCode">Zipcode</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="customerZipCode" placeholder="Enter Customer Zipcode" ng-model="customerZipCode" />
+                                                    <input type="text" class="form-control input-sm" id="customerZipCode" placeholder="Enter Customer Zipcode" ng-model="customerZipCode" />
                                                 </div>
                                             </div>
                                         </div>
@@ -209,39 +341,39 @@
                                             </h4> -->
                                             <div class="panel-title">
                                                 <input type="checkbox" ng-checked="isPickupContactSameAsCC" ng-click="onCheckedPickupContact()" ng-model="isPickupContactSameAsCC">
-                                                <label href="#pickupCustomerContact">Pickup contact same as Customer contact</label>
+                                                <label class="input-sm" href="#pickupCustomerContact">Pickup contact same as Customer contact</label>
                                             </div>
                                         </div>
                                         <div id="pickupCustomerContact"
                                         ng-class="pickupClassToggle">
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="pickupAddressLine1">Address Line 1</label>
+                                                <label class="control-label col-sm-4 input-sm" for="pickupAddressLine1">Address Line 1</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="pickupAddressLine1" placeholder="Enter Pickup Address Line 1">
+                                                    <input type="text" class="form-control input-sm" id="pickupAddressLine1" placeholder="Enter Pickup Address Line 1">
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="pickupAddressLine2">Address Line 2</label>
+                                                <label class="control-label col-sm-4 input-sm" for="pickupAddressLine2">Address Line 2</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="pickupAddressLine2" placeholder="Enter Pickup Address Line 2">
+                                                    <input type="text" class="form-control input-sm" id="pickupAddressLine2" placeholder="Enter Pickup Address Line 2">
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="pickupCity">City</label>
+                                                <label class="control-label col-sm-4 input-sm" for="pickupCity">City</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="pickupCity" placeholder="Enter Pickup City" ng-model="pickupCity" />
+                                                    <input type="text" class="form-control input-sm" id="pickupCity" placeholder="Enter Pickup City" ng-model="pickupCity" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="pickupState">State</label>
+                                                <label class="control-label col-sm-4 input-sm" for="pickupState">State</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="pickupState" placeholder="Enter Pickup State" ng-model="pickupState" />
+                                                    <input type="text" class="form-control input-sm" id="pickupState" placeholder="Enter Pickup State" ng-model="pickupState" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="pickupZipCode">Zipcode</label>
+                                                <label class="control-label col-sm-4 input-sm" for="pickupZipCode">Zipcode</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="pickupZipCode" placeholder="Enter Pickup Zipcode" ng-model="pickupZipCode" />
+                                                    <input type="text" class="form-control input-sm" id="pickupZipCode" placeholder="Enter Pickup Zipcode" ng-model="pickupZipCode" />
                                                 </div>
                                             </div>
                                             
@@ -250,38 +382,38 @@
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <div class="panel-title">
-                                                <label>Dropoff Contact</label>
+                                                <label class="input-sm">Dropoff Contact</label>
                                             </div>
                                         </div>
                                         <div id="dropoffCustomerContact" class="panel-collapse collapse in">
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="dropoffAddressLine1">Address Line 1</label>
+                                                <label class="control-label col-sm-4 input-sm" for="dropoffAddressLine1">Address Line 1</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="dropoffAddressLine1" placeholder="Enter Dropoff Address Line 1">
+                                                    <input type="text" class="form-control input-sm" id="dropoffAddressLine1" placeholder="Enter Dropoff Address Line 1">
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="dropoffAddressLine2">Address Line 2</label>
+                                                <label class="control-label col-sm-4 input-sm" for="dropoffAddressLine2">Address Line 2</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="dropoffAddressLine2" placeholder="Enter Dropoff Address Line 2">
+                                                    <input type="text" class="form-control input-sm" id="dropoffAddressLine2" placeholder="Enter Dropoff Address Line 2">
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="dropoffCity">City</label>
+                                                <label class="control-label col-sm-4 input-sm" for="dropoffCity">City</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="dropoffCity" placeholder="Enter Dropoff City" ng-model="dropoffCity" />
+                                                    <input type="text" class="form-control input-sm" id="dropoffCity" placeholder="Enter Dropoff City" ng-model="dropoffCity" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="dropoffState">State</label>
+                                                <label class="control-label col-sm-4 input-sm" for="dropoffState">State</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="dropoffState" placeholder="Enter Dropoff State" ng-model="dropoffState" />
+                                                    <input type="text" class="form-control input-sm" id="dropoffState" placeholder="Enter Dropoff State" ng-model="dropoffState" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
-                                                <label class="control-label col-sm-4" for="dropoffZipCode">Zipcode</label>
+                                                <label class="control-label col-sm-4 input-sm" for="dropoffZipCode">Zipcode</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control" id="dropoffZipCode" placeholder="Enter Dropoff Zipcode" ng-model="dropoffZipCode" />
+                                                    <input type="text" class="form-control input-sm" id="dropoffZipCode" placeholder="Enter Dropoff Zipcode" ng-model="dropoffZipCode" />
                                                 </div>
                                             </div>
                                         </div>
@@ -290,14 +422,14 @@
                             </div>        
                             <div id="vehicleInfo" class="tab-pane fade">
                                 <table class="table table-striped">
-                                    <tr>
+                                    <tr class="input-sm">
                                         <th>VIN</th>
                                         <th>Make</th>
                                         <th>Model</th>
                                         <th>Year</th>
 
                                     </tr>
-                                    <tr ng-repeat="vehicle in vehicles">
+                                    <tr class="input-sm" ng-repeat="vehicle in vehicles">
                                         <td>{{ vehicle.vin }}</td>
                                         <td>{{ vehicle.make }}</td>
                                         <td>{{ vehicle.model }}</td>
@@ -309,27 +441,27 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading">Add Vehicle</div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3" for="vin">VIN</label>
+                                        <label class="control-label col-sm-3 input-sm" for="vin">VIN</label>
                                         <div class="col-sm-8"> 
-                                            <input type="text" class="form-control" id="vin" placeholder="Enter VIN" ng-model="vin">
+                                            <input type="text" class="form-control input-sm" id="vin" placeholder="Enter VIN" ng-model="vin">
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3" for="make">Make</label>
+                                        <label class="control-label col-sm-3 input-sm" for="make">Make</label>
                                         <div class="col-sm-8"> 
-                                            <input type="text" class="form-control" id="make" placeholder="Enter Make" ng-model="make">
+                                            <input type="text" class="form-control input-sm" id="make" placeholder="Enter Make" ng-model="make">
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3" for="model">Model</label>
+                                        <label class="control-label col-sm-3 input-sm" for="model">Model</label>
                                         <div class="col-sm-8"> 
-                                            <input type="text" class="form-control" id="model" placeholder="Enter Model" ng-model="model">
+                                            <input type="text" class="form-control input-sm" id="model" placeholder="Enter Model" ng-model="model">
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <label class="control-label col-sm-3" for="year">Year</label>
+                                        <label class="control-label col-sm-3 input-sm" for="year">Year</label>
                                         <div class="col-sm-8"> 
-                                            <input type="text" class="form-control" id="year" placeholder="Enter Year" ng-model="year">
+                                            <input type="text" class="form-control input-sm" id="year" placeholder="Enter Year" ng-model="year">
                                         </div>
                                     </div>
 
@@ -340,8 +472,8 @@
                         </div> <!--End of Primary tab content-->
                     
                     <div id="actionBar">
-                        <button id="nextOrderButton" type="button" class="btn btn-info btn-sm">Back</button>
-                        <button id="prevOrderButton" type="button" class="btn btn-info btn-sm">Next</button>
+                        <button id="nextOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Back</button>
+                        <button id="prevOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Next</button>
                         <button type="submit" id="addOrderButton" class="btn btn-info btn-sm">Submit</button>
                     </div>
                     </form>   

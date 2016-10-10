@@ -1,6 +1,28 @@
 
 /* .row.content {height: 500px;} */
 
+ul.list-group:after {
+  clear: both;
+  display: block;
+  content: "";
+}
+
+.list-group-item {
+    float: left;
+    margin-left: 5px;
+    margin-right: 5px;
+    min-width: 250px;
+}
+
+
+.alertBox {
+   
+   margin-left: 5px;
+   margin-right: 5px;
+   vertical-align: middle;
+   
+}
+
 .sidenav {
     padding-top: 20px;
     background-color: #f1f1f1;
@@ -41,6 +63,46 @@
 #actionBar
 {
 	width: 100%;
+	text-align: center;
+	margin-bottom: 10px;
+}
+
+.detailBoxCell
+{
+	font-weight: normal;
+	border-right-style: solid;
+	border-color: @brand-info;
+    border-width: 1px;
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+    min-height: 25px;
+}
+
+.detailBoxCellValue
+{
+	font-weight: normal;
+}
+
+.detailBox
+{
+
+	min-height: 25px;
+	
+    border-right-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-color: @brand-info;
+    border-width: 1px;
+    /* outline: 1px solid orange; */
+}
+.detailBoxHdr
+{	
+	text-align: center;
+	border: 1px solid;
+	border-color: @brand-info;	
+}
+.detailControlBar
+{
 	text-align: center;
 	margin-bottom: 10px;
 }

@@ -3,7 +3,16 @@ var app = angular.module('mainApp', []);
 
 app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
 
+  $scope.baseServiceUrl="http://localhost:8080"
   $scope.isPickupContactSameAsCC = true;
+
+  $scope.ALERT_BASE="list-group-item list-group-item-action";
+  $scope.ALERT_SUCCESS="list-group-item-success";
+  $scope.ALERT_INFO="list-group-item-info";
+  $scope.ALERT_DANGER="list-group-item-danger";
+  $scope.ALERT_WARNING="list-group-item-warning";
+
+  $scope.selectedOrder=null;
 
   // $scope.truckSummaryHeaders = [
   //   "Truck Name",
@@ -46,34 +55,47 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     // "Dropoff zipCode",
     "Payment mode",
     "Expected miles",
-    "Expense",
-    "Cost"
+    // "Expense",
+    "Service fee"
   ];
 
   $scope.orderStatusList = [
-      "Not Started", "In-Progress", "Completed"
+      "Not Started", "In-Progress", "Completed", "Deferred"
   ]
 
   $scope.paidStatusList = [
       "Not Paid", "Paid"
   ]
 
-  $scope.truckList = [
-    {id:100, name: 'Maximus'},
-    {id:200, name: 'Avengers'},
-    {id:300, name: 'XMen'}
-  ];
-
   $scope.truckListFilter = [
     {id:0, name: '', display: "All"},
-    {id:100, name: 'Maximus', display: 'Maximus'},
-    {id:200, name: 'Avengers', display: 'Avengers'},
+    {id:1, name: 'Maximus', display: 'Maximus'},
+    {id:10, name: 'Avengers', display: 'Avengers'},
     {id:300, name: 'XMen', display: 'XMen'}
+  ];
+
+  $scope.truckList = [
+    {id:1, name: 'Maximus'},
+    {id:10, name: 'Avengers'},
+    {id:300, name: 'XMen'}
   ];
 
   $scope.paymentModeList = [
     "COD", "Debit", "Credit", "Check"
-  ];
+  ];  
+
+  $scope.getTruckObjectByName = function(truckId)
+  {
+    var i=0;
+    for(i; i< $scope.truckList.length; i++)
+    {
+      if($scope.truckList[i].id == truckId)
+      {
+        $scope.selectedOrder.truckName=$scope.truckList[i];
+        break;
+      }
+    }
+  }
 
   $scope.vehicles = [];
   $scope.addMoreVehicle = function(){
@@ -89,15 +111,148 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     $scope.year = "";
     $scope.vin = "";
   }
-
   
-  $scope.selectedOrder=null;
-  $scope.mOrderDetailSelection="";
+  $scope.getStartDateOfMonth = function(date)
+  {
+    date.setDate(1)
+    return date;
+  }
+
+  // $scope.onFilterChange = function()
+  // {
+  //   console.log($scope.response.length)
+  // }
+
+  // $scope.$watch('selectedTruckFilter.id', function() {
+  //   console.log("selected truck filter id is "  + $scope.selectedTruckFilter);
+  // });
+  
+  $scope.orderEndDateFilter = new Date();
+  $scope.orderStartDateFilter = $scope.getStartDateOfMonth(new Date());
+  $scope.filterByDateRange = function()
+  {
+    console.log($scope.orderStartDateFilter)
+    var queryParameters = new Object();
+    queryParameters.startDate=$scope.orderStartDateFilter.toISOString().substring(0, 10);
+    queryParameters.enddate=$scope.orderEndDateFilter.toISOString().substring(0, 10);
+    $scope.getOrders(queryParameters);
+    
+  }
+
+  $scope.makeAlertStyle = function(style)
+  {
+    return $scope.ALERT_BASE.concat(" ", style);
+  }
+
+  $scope.orderHomeToggle="tab-pane active";
+  $scope.orderDtlToggle="tab-pane";
+  $scope.selectedTableRow = function(e)
+  {
+    var orderToggleTemp=$scope.orderDtlToggle;
+    $scope.orderDtlToggle=$scope.orderHomeToggle;
+    $scope.orderHomeToggle=orderToggleTemp;
+
+    
+    $scope.selectedOrder = angular.copy(e);
+    console.log($scope.selectedOrder)
+
+  }
+
+  $scope.orderSummary = new Object();
+  $scope.$watchCollection("filteredOrders", function() {
+    console.log("At filtered orders");
+    
+    $scope.orderSummary.totalOrderAmount=new Object();
+    $scope.orderSummary.totalOrderAmount.value=0;
+    $scope.orderSummary.totalOrderAmount.alert=$scope.makeAlertStyle($scope.ALERT_INFO);
+    
+    $scope.orderSummary.totalOrderPaid=new Object();
+    $scope.orderSummary.totalOrderPaid.value=0;
+    $scope.orderSummary.totalOrderPaid.alert=$scope.makeAlertStyle($scope.ALERT_INFO);
+    
+    $scope.orderSummary.totalOrderUnPaid=new Object();
+    $scope.orderSummary.totalOrderUnPaid.value=0;
+    $scope.orderSummary.totalOrderUnPaid.alert=$scope.makeAlertStyle($scope.ALERT_INFO);
+
+    $scope.orderSummary.totalUnpaidButOrderCompleted=new Object();
+    $scope.orderSummary.totalUnpaidButOrderCompleted.value=0;
+    $scope.orderSummary.totalUnpaidButOrderCompleted.alert=$scope.makeAlertStyle($scope.ALERT_INFO);
+
+    angular.forEach($scope.filteredOrders, function(order)
+    {
+      if(order.orderStatus !=null && order.orderStatus.toUpperCase() != "DEFERRED")
+      {
+        if(!order.isPaid)
+        {
+          $scope.orderSummary.totalOrderUnPaid.value += order.serviceFee;
+          if($scope.orderSummary.totalOrderUnPaid.value > 0)
+            $scope.orderSummary.totalOrderUnPaid.alert=$scope.makeAlertStyle($scope.ALERT_WARNING)
+        }
+        if(order.isPaid)
+        {
+          $scope.orderSummary.totalOrderPaid.value += order.serviceFee;
+          if($scope.orderSummary.totalOrderPaid.value > 0)
+            $scope.orderSummary.totalOrderPaid.alert=$scope.makeAlertStyle($scope.ALERT_SUCCESS)
+
+        }
+
+
+        if(order.orderStatus.toUpperCase() == "COMPLETED" && !order.isPaid)
+        {
+          $scope.orderSummary.totalUnpaidButOrderCompleted.value += order.serviceFee;
+          if($scope.orderSummary.totalUnpaidButOrderCompleted.value > 0)
+            $scope.orderSummary.totalUnpaidButOrderCompleted.alert=$scope.makeAlertStyle($scope.ALERT_DANGER)
+        }
+
+        $scope.orderSummary.totalOrderAmount.value += order.serviceFee;
+        $scope.orderSummary.totalOrderAmount.alert=$scope.makeAlertStyle($scope.ALERT_SUCCESS)
+        // console.log($scope.orderSummary.totalOrderAmount.alert)
+      }
+    })
+
+    console.log($scope.orderSummary.totalAmount)
+  });
+
+  // $scope.total=0;
+  // $scope.filteredOrder=new Array();
+  // $scope.filterFunction = function(element) {
+  //   console.log("Filter function triggered")
+  //   console.log(new Date())
+  //   console.log(element.truckId)
+  //   console.log($scope.selectedTruckFilter)
+  //   console.log($scope.selectedPaymentModeFilter)
+
+  //   $scope.total= $scope.total+1;
+  //   var result=true;
+  //   if($scope.selectedTruckFilter==undefined && $scope.selectedPaymentModeFilter==undefined) 
+  //     return true
+  //   if($scope.selectedTruckFilter != undefined)
+  //     result=(element.truckId == $scope.selectedTruckFilter.id ? true : false);
+    
+
+  //   if($scope.selectedPaymentModeFilter != undefined)
+  //   { 
+  //     var paymentMode=$scope.selectedPaymentModeFilter.toUpperCase()
+  //     result=(element.paymentMode != null && element.paymentMode == paymentMode) ? true :false;
+  //   }
+
+  //   if(result)
+  //     $scope.filteredOrder.push(element)
+  //   console.log($scope.total)
+  //   console.log($scope.filteredOrder.length)
+  //   return result
+    
+  // };
+  
+  
   $scope.orderDetailToggle="panel panel-primary collapse"
   $scope.orderSelected = function(event){
       
       console.log($scope.orderDetailSelection)
-      $scope.selectedOrder = $scope.orderDetailSelection;
+      $scope.selectedOrder = angular.copy($scope.orderDetailSelection);
+      
+      /*Assign truck object instead of truck name*/
+      $scope.getTruckObjectByName(Number($scope.selectedOrder.truckId))
       
       if($scope.orderDetailToggle == "panel panel-primary collapse")
       {
@@ -117,20 +272,24 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     // var customerInfo = new Object();
     // customerInfo.name = $scope.customerName;
 
+    console.log("at add order testing")
+    console.log($scope.selectedOrder.truckName)
+    console.log($scope.selectedOrder.paymentMode)
+
     var order = new Object();
-    order.truckId=$scope.selectedTruck.id;
-    order.truckName=$scope.selectedTruck.name;
+    order.truckId=$scope.selectedOrder.truckName.id
+    order.truckName=$scope.selectedOrder.truckName.name;
     order.vehicles=$scope.vehicles;
     
     var pickupContactInfo = null;
     var customerInfo = new Object();
-    customerInfo.firstName = $scope.customerName;
+    customerInfo.firstName = $scope.selectedOrder.customerInfo.name;
     customerInfo.lastName = "";
-    customerInfo.addressLine1 = "";
-    customerInfo.contactNumber = $scope.customerContact;
-    customerInfo.state = $scope.customerState;
-    customerInfo.zipCode = $scope.customerZipCode;
-    customerInfo.city = $scope.customerCity;
+    customerInfo.addressLine1 = $scope.selectedOrder.customerInfo.addressLine1;
+    customerInfo.contactNumber = $scope.selectedOrder.customerInfo.phone;
+    customerInfo.state = $scope.selectedOrder.customerInfo.state;
+    customerInfo.zipCode = $scope.selectedOrder.customerInfo.zipCode;
+    customerInfo.city = $scope.selectedOrder.customerInfo.city;
     order.customerInfo = customerInfo;
 
 
@@ -141,36 +300,40 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     else
     {
       pickupContactInfo = new Object();
-      pickupContactInfo.firstName = $scope.customerName;
+
+      //Not enabled yet
+      pickupContactInfo.firstName = "";
       pickupContactInfo.lastName = "";
-      pickupContactInfo.addressLine1 = $scope.pickupAddressLine1;
-      pickupContactInfo.contactNumber = "0123456789";
-      pickupContactInfo.state = $scope.pickupState;
-      pickupContactInfo.zipCode = $scope.pickupZipCode;
-      pickupContactInfo.city = $scope.pickupCity;
+      pickupContactInfo.contactNumber = "";
+      pickupContactInfo.addressLine1 = $scope.selectedOrder.pickupContactInfo.addressLine1;
+      pickupContactInfo.state = $scope.selectedOrder.pickupContactInfo.state;
+      pickupContactInfo.zipCode = $scope.selectedOrder.pickupContactInfo.zipCode;
+      pickupContactInfo.city = $scope.selectedOrder.pickupContactInfo.city;
       
     }  
     order.pickupContactInfo = pickupContactInfo;
-    // alert(pickupContactInfo.state + "," + pickupContactInfo.zipCode)
-
+  
     var dropoffContactInfo = new Object();
-    dropoffContactInfo.firstName = $scope.customerName;
+    //Not enabnled yet
+    dropoffContactInfo.firstName = "";
     dropoffContactInfo.lastName = "";
-    dropoffContactInfo.addressLine1 = $scope.dropoffAddressLine1;
-    pickupContactInfo.contactNumber = "9876543210";
-    dropoffContactInfo.state = $scope.dropoffState;
-    dropoffContactInfo.zipCode = $scope.dropoffZipCode;
-    dropoffContactInfo.city = $scope.dropoffCity;
+    pickupContactInfo.contactNumber = "";
+    
+    dropoffContactInfo.addressLine1 = $scope.selectedOrder.dropoffContactInfo.addressLine1;
+    
+    dropoffContactInfo.state = $scope.selectedOrder.dropoffContactInfo.state;
+    dropoffContactInfo.zipCode = $scope.selectedOrder.dropoffContactInfo.zipCode;
+    dropoffContactInfo.city = $scope.selectedOrder.dropoffContactInfo.city;
     order.dropoffContactInfo = dropoffContactInfo;
 
     // order.orderDate = $scope.orderDate;
 
-    order.orderDate = new Date().toISOString().substring(0, 10);;
-    order.pickupDate = $scope.pickupDate.toISOString().substring(0, 10);
-    order.dropoffDate = $scope.dropoffDate.toISOString().substring(0, 10);;
-    order.paymentMode = $scope.selectedPaymentMode;
-    order.expectedMiles = $scope.expectedMiles;
-    order.serviceFee = $scope.cost;
+    order.orderDate = new Date().toISOString().substring(0, 10);
+    order.pickupDate = $scope.selectedOrder.pickupDate.toISOString().substring(0, 10);
+    order.dropoffDate = $scope.selectedOrder.dropoffDate.toISOString().substring(0, 10);;
+    order.paymentMode = $scope.selectedOrder.selectedPaymentMode;
+    order.expectedMiles = $scope.selectedOrder.expectedMiles;
+    order.serviceFee = $scope.selectedOrder.serviceFee;
     //$scope.response.push(order)
     $scope.upsertOrder(order);
 
@@ -207,6 +370,8 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     })
     .then(
         function success(data){
+          $scope.selectedOrder = null;
+          $scope.vehicles = null;
           console.log(data);
         },
         function error(error){
@@ -215,10 +380,35 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     );
   }
 
+  $scope.getOrders = function(queryParameters)
+  {
+
+    $http({
+      method: "GET",
+      url : "http://localhost:8080/vts-core/truck/orders",
+      headers: {
+        "Content-Type" : "application/json",
+        "Accept" : "application/json"
+      },
+      params:queryParameters
+    })
+    .then(
+        function success(response){          
+          $scope.response = response.data;
+          console.log(response)
+          
+        },
+        function error(response){
+          $scope.error = response;
+        }
+    );
+
+  }
+
   $http.get("http://localhost:8080/vts-core/truck/orders")
     .then(
-        function success(response){
-          $scope.response = response.data.reports;
+        function success(response){          
+          $scope.response = response.data;
           console.log(response)
           
         },

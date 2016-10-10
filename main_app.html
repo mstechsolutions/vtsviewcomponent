@@ -46,6 +46,7 @@
         </nav>
 
 		<div class="container">
+            
      		<div class="row content">
                 <!-- <div class="col-sm-2 sidenav">
                   <p><a href="#">Link</a></p>
@@ -78,56 +79,239 @@
 
                 </div> -->
 
-                
-
                 <!-- Orders container -->
                 <div>
-                    <button id="addOrder" type="button" class="btn btn-info btn-md" data-toggle="modal" data-target="#myModal" ng-click="onAddOrderClick()" >Add order</button>
 
-                    <div>
-                        <label>Truck</label>
-                            <select id="truckList" ng-model="selectedTruckFilter" ng-options="truck.display for truck in truckListFilter">
-                            </select>
-                        </label>
-                        <label>Payment Mode</label>
-                            <select id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedPaymentModeFilter">
-                            </select>
-                        </label>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Quick summary</div>
+                        <div class="panel-body form-inline">
+                            <div class="list-group">
+                                <a href="#" class="{{orderSummary.totalOrderAmount.alert}}">
+                                    Total Order Amount
+                                    <span class="badge" style="margin-left:10px">{{"$ "+orderSummary.totalOrderAmount.value}}</span>
+                                </a>
+                                <a href="#" class="{{orderSummary.totalOrderPaid.alert}}">
+                                    Total Amount Paid
+                                    <span class="badge" style="margin-left:10px">{{"$ "+orderSummary.totalOrderPaid.value}}</span>
+                                </a>
+                                <a href="#" class="{{orderSummary.totalOrderUnPaid.alert}}">
+                                    Total Amount Unpaid
+                                    <span class="badge" style="margin-left:10px">{{"$ "+orderSummary.totalOrderUnPaid.value}}</span>
+                                </a>
+                                <a href="#" class="{{orderSummary.totalUnpaidButOrderCompleted.alert}}">
+                                    Total Amount Due
+                                    <span class="badge" style="margin-left:10px">{{"$ "+orderSummary.totalUnpaidButOrderCompleted.value}}</span>
+                                </a>
+
+                            </div>
+                        </div>
                     </div>
-                    
 
-                    <table class="table table-striped" ng-init="index=0">
-                        <tr>
-                            <th ng-repeat="x in gridHeaders">{{x}}</th>
-                        </tr>
-                        <tr ng-repeat="order in response | filter:selectedTruckFilter.name | filter:selectedPaymentModeFilter">
-                            <!-- <td>{{ order.truckId }}</td> -->
-                            <td>
-                                <input type="radio" name="orderDetailSelection" ng-model="$parent.orderDetailSelection" ng-change="orderSelected($event)" ng-value="order">
-                                <!-- {{order.truckName}} -->
-                                </input>
-                            </td>
-                            <td>{{ order.truckName }}</td>
-                            <td>{{ order.customerInfo.name }}</td>
-                            <td>{{ order.customerInfo.phone }}</td>
-                            <td>{{ order.orderDate | date:'MM/dd/yyyy' }}</td>
-                            <td>{{ order.pickupDate | date:'MM/dd/yyyy' }}</td>
-                            <td>{{ order.pickupContactInfo.state + ", " + order.pickupContactInfo.zipCode}}</td>
-                            <td>{{ order.dropoffDate | date:'MM/dd/yyyy' }}</td>
-                            <td>{{ order.dropoffContactInfo.state + ", " + order.dropoffContactInfo.zipCode  }}</td>
-                            <td>{{ order.paymentMode }}</td>
-                            <td>{{ order.expectedMiles }}</td>
-                            <td>{{ order.expense }}</td>
-                            <td>{{ order.cost }}</td>
-                        </tr>
-                    </table>
-                </div>
+                    <div class="tab-content" id="orderTabGroup">
+                        <div ng-class="orderHomeToggle" id="home" role="tabpanel">
+                            <div class="panel panel-default">
+                                <div class="panel-body form-inline">
+                                    <div class="form-group input-group">
+                                        <label>Truck
+                                            <select id="truckList" ng-model="selectedTruckFilter" ng-options="truck.display for truck in truckListFilter" ng-change="onFilterChange()">
+                                            </select>
+                                        </label>
+                                        <label>Payment Mode
+                                            <select id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedPaymentModeFilter">
+                                            </select>
+                                        </label>
+                                    </div>
+                                    
+                                    <div class="form-group input-group">
+                                        <label>Start Date</label>
+                                        <input type="date" id="startDateFilter" ng-model="orderStartDateFilter" />
+                                        
+                                        <label>End Date</label>
+                                        <input type="date" id="endDateFilter" ng-model="orderEndDateFilter" />
+                                        <span>
+                                            <button class="btn btn-info btn-sm" type="button" ng-click="filterByDateRange()">Apply</button>
+                                        </span>    
+                                    </div>
+                                    <div class="form-group" >
+                                       
+                                        <button id="addOrder" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" ng-click="onAddOrderClick()" >Add order</button>
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+                            <table class="table table-striped table-hover" ng-init="index=0" >
+                                <tr>
+                                    <th ng-repeat="x in gridHeaders">{{x}}</th>
+                                </tr>
+                                <!-- <tr ng-repeat="order in filteredOrders = (response | filter: filterFunction)"> -->
+                                <tr ng-repeat="order in filteredOrders = (response | filter:selectedTruckFilter.id | filter:selectedPaymentModeFilter)" ng-click="selectedTableRow(order)">
+                                    
+                                    <td>
+                                        <input type="radio" name="orderDetailSelection" ng-model="$parent.orderDetailSelection" ng-change="orderSelected($event)" ng-value="order">
+                                        <!-- {{order.truckName}} -->
+                                        </input>
+                                    </td>
+                                    <td>{{ order.truckName }}</td>
+                                    <td>{{ order.customerInfo.firstName }}</td>
+                                    <td>{{ order.customerInfo.contactNumber }}</td>
+                                    <td>{{ order.orderDate | date:'MM/dd/yyyy' }}</td>
+                                    <td>{{ order.pickupDate | date:'MM/dd/yyyy' }}</td>
+                                    <td>{{ order.pickupContactInfo.state + ", " + order.pickupContactInfo.zipCode}}</td>
+                                    <td>{{ order.dropoffDate | date:'MM/dd/yyyy' }}</td>
+                                    <td>{{ order.dropoffContactInfo.state + ", " + order.dropoffContactInfo.zipCode  }}</td>
+                                    <td>{{ order.paymentMode }}</td>
+                                    <td>{{ order.expectedMiles }}</td>
+                                    <!-- <td>{{ order.expense }}</td> -->
+                                    <td>{{ order.serviceFee }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div ng-class="orderDtlToggle" id="profile" role="tabpanel">
+                            <div class="container" style="width:60%;max-height:300px">
+                                <div class="row detailControlBar">
+                                    <button id="back2OrderHome" type="button" class="btn btn-info btn-sm">Back</button>
+                                    <button id="editOrder" type="button" class="btn btn-info btn-sm">Edit</button>
+                                </div>
+                                <div class="row detailBox" style="border-top-style:solid">
+                                    <label class="col-sm-6 detailBoxCell" >Order Id</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >{{selectedOrder.orderId}}</
+                                    </label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-4 detailBoxCell" >Order status</label>
+                                    <label class="col-sm-4 detailBoxCell" >Paid status</label>
+                                    <label class="col-sm-4 detailBoxCellValue" >Payment mode</label>
+                                    
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.customerInfo.orderStatus}}</label>
+                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.customerInfo.isPaid}}</label>
+                                    <label class="col-sm-4 detailBoxCellValue" >{{selectedOrder.customerInfo.paymentMode}}</label>
+                                </div>
+                                <div class="row detailBox">
+                                    
+                                    <label class="col-sm-4 detailBoxCell" >Order date</label>
+                                    <label class="col-sm-4 detailBoxCell" >Pickup date</label>
+                                    <label class="col-sm-4 detailBoxCellValue" >Dropoff date</label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.orderDate}}</label>
+                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.pickupDate}}</label>
+                                    <label class="col-sm-4 detailBoxCellValue" >{{selectedOrder.dropoffDate}}</label>
+                                </div>
+                                
+                                <div class="row detailBoxHdr">
+                                    <label>Customer details</label>
+                                </div>    
+                                <div class="row detailBox">
+                                    <div class="col-sm-6 detailBoxCell" >Contact name</div>
+                                    <div class="col-sm-6 detailBoxCellValue" >
+                                        {{
+                                            selectedOrder.customerInfo.firstName + " " +
+                                            selectedOrder.customerInfo.lastName
+                                        }}
+                                    </div>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-6 detailBoxCell" >Address</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >{{selectedOrder.customerInfo.addressLine1 + " " +
+                                        selectedOrder.customerInfo.addressLine2 + ", " +
+                                        selectedOrder.customerInfo.state + ", " +
+                                        selectedOrder.customerInfo.country + ", " +
+                                        selectedOrder.customerInfo.zipCode }}</label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-6 detailBoxCell" >Contact number</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >{{selectedOrder.customerInfo.contactNumber}}</label>
+                                </div>
+                                <div class="row detailBoxHdr">
+                                    <label>Pickup Customer details</label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-6 detailBoxCell" >Contact name</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >
+                                        {{
+                                            selectedOrder.pickupCustomerInfo.firstName + " " +
+                                            selectedOrder.pickupCustomerInfo.lastName
+                                        }}
+                                    </label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-6 detailBoxCell" >Address</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >
+                                        {{selectedOrder.pickupCustomerInfo.addressLine1 + " " +
+                                        selectedOrder.pickupCustomerInfo.addressLine2 + ", " +
+                                        selectedOrder.pickupCustomerInfo.state + ", " +
+                                        selectedOrder.pickupCustomerInfo.country + ", " +
+                                        selectedOrder.pickupCustomerInfo.zipCode }}
+                                    </label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-6 detailBoxCell" >Contact number</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >
+                                        {{selectedOrder.pickupCustomerInfo.contactNumber}}
+                                    </label>
+                                </div>
+                                <div class="row detailBoxHdr">
+                                    <label>Dropoff Customer details</label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-6 detailBoxCell" >Contact name</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >
+                                        {{
+                                            selectedOrder.dropoffCustomerInfo.firstName + " " +
+                                            selectedOrder.dropoffCustomerInfo.lastName
+                                        }}
+                                    </label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-6 detailBoxCell" >Address</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >
+                                        {{selectedOrder.dropoffCustomerInfo.addressLine1 + " " +
+                                        selectedOrder.dropoffCustomerInfo.addressLine2 + ", " +
+                                        selectedOrder.dropoffCustomerInfo.state + ", " +
+                                        selectedOrder.dropoffCustomerInfo.country + ", " +
+                                        selectedOrder.dropoffCustomerInfo.zipCode }}
+                                    </label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-6 detailBoxCell" >Contact number</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >
+                                        {{selectedOrder.dropoffCustomerInfo.contactNumber}}
+                                    </label>
+                                </div>
+                                <div class="row detailBoxHdr">
+                                    <label>Vehicles</label>
+                                </div>
+                                <div class="row detailBox">
+                                    <label class="col-sm-3 detailBoxCell" >Make</label>
+                                    <label class="col-sm-3 detailBoxCell" >Model</label>
+                                    <label class="col-sm-3 detailBoxCell" >Year</label>
+                                    <label class="col-sm-3 detailBoxCellValue" >Title</label>
+                                </div>
+                                <div class="row detailBox" ng-repeat="vehicle in selectedOrder.vehicles">
+                                    <label class="col-sm-3 detailBoxCell" >{{vehicle.make}}</label>
+                                    <label class="col-sm-3 detailBoxCell" >{{vehicle.model}}</label>
+                                    <label class="col-sm-3 detailBoxCell" >{{vehicle.year}}</label>
+                                    <label class="col-sm-3 detailBoxCellValue" >{{vehicle.licencePlate}}</label>
+                                </div>
+
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div><!--Order Container-->
+
+                
                 
                 <div ng-class="orderDetailToggle">
                     <div class="panel-heading">Order Details</div>
                     <div class="row" >
                         <div class="col-sm-4" style="padding-left:20px" >
+                            
                             <div>Customer details</div>
+                            
                             <div class="row">
                                 <label class="col-sm-4" >Contact name</label>
                                 <label class="col-sm-1" >: </label>
@@ -216,7 +400,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-4  input-sm" for="truckList">Truck</label>
                                     <div class="col-sm-8">
-                                        <select class="form-control input-sm" id="truckList" ng-model="selectedTruck" ng-options="truck.name for truck in truckList">
+                                        <select class="form-control input-sm" id="truckList" ng-options="truck.name for truck in truckList" ng-model="selectedOrder.truckName">
                                             <!-- <option ng-repeat="truck in truckList">{{truck.name}}</option> -->
                                         </select>
                                     </div>
@@ -224,7 +408,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="orderStatus">Order status</label>
                                     <div class="col-sm-8">
-                                        <select class="form-control input-sm" id="orderStatus" ng-options="orderStatus for orderStatus in orderStatusList" ng-model="selectedOrderStatus">
+                                        <select class="form-control input-sm" id="orderStatus" ng-options="orderStatus for orderStatus in orderStatusList" ng-model="selectedOrder.orderStatus">
                                         </select>
                                     </div>
                                 </div>
@@ -237,45 +421,45 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="customerContact">Customer Contact</label>
                                     <div class="col-sm-8"> 
-                                        <input type="text" class="form-control input-sm" id="customerContact" ng-model="customerContact" placeholder="Enter Customer contact number" />
+                                        <input type="text" class="form-control input-sm" id="customerContact" ng-model="selectedOrder.customerInfo.phone" placeholder="Enter Customer contact number" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4  input-sm" for="pickupDate">Pickup Date</label>
                                     <div class="col-sm-8"> 
-                                        <input type="date" class="form-control  input-sm" id="pickupDate" ng-model="pickupDate" />
+                                        <input type="date" class="form-control  input-sm" id="pickupDate" ng-model="selectedOrder.pickupDate" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="dropoffDate">Dropoff Date</label>
                                     <div class="col-sm-8"> 
-                                        <input type="date" class="form-control  input-sm" id="dropoffDate" ng-model="dropoffDate" />
+                                        <input type="date" class="form-control  input-sm" id="dropoffDate" ng-model="selectedOrder.dropoffDate" />
                                     </div>
                                 </div>
 
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="expectedMiles">Expected Miles</label>
                                     <div class="col-sm-8"> 
-                                        <input type="text" class="form-control input-sm" id="expectedMiles" ng-model="expectedMiles" placeholder="Enter Expected Miles" />
+                                        <input type="text" class="form-control input-sm" id="expectedMiles" ng-model="selectedOrder.expectedMiles" placeholder="Enter Expected Miles" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="cost">Service fee</label>
                                     <div class="col-sm-8"> 
-                                        <input type="text" class="form-control input-sm" id="cost" placeholder="Enter Service fee" ng-model="cost" />
+                                        <input type="text" class="form-control input-sm" id="cost" placeholder="Enter Service fee" ng-model="selectedOrder.serviceFee" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="paymentModeList">Payment Mode</label>
                                     <div class="col-sm-8">
-                                        <select class="form-control input-sm" id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedPaymentMode">
+                                        <select class="form-control input-sm" id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedOrder.paymentMode">
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="paidStatus">Paid status</label>
                                     <div class="col-sm-8">
-                                        <select class="form-control input-sm" id="paidStatus" ng-options="paidStatus for paidStatus in paidStatusList" ng-model="selectedPaidStatus">
+                                        <select class="form-control input-sm" id="paidStatus" ng-options="paidStatus for paidStatus in paidStatusList" ng-model="selectedOrder.isPaid">
                                         </select>
                                     </div>
                                 </div>
@@ -305,31 +489,31 @@
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4  input-sm" for="customerAddressLine1">Address Line 1</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control  input-sm" id="customerAddressLine1" placeholder="Enter Customer Address Line 1" />
+                                                    <input type="text" class="form-control  input-sm" id="customerAddressLine1" placeholder="Enter Customer Address Line 1" ng-model="selectedOrder.customerInfo.addressLine1" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="customerAddressLine2">Address Line 2</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="customerAddressLine2" placeholder="Enter Customer Address Line 2" />
+                                                    <input type="text" class="form-control input-sm" id="customerAddressLine2" placeholder="Enter Customer Address Line 2" ng-model="selectedOrder.customerInfo.addressLine2"/>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="customerCity">City</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="customerCity" placeholder="Enter Customer City" ng-model="customerCity" />
+                                                    <input type="text" class="form-control input-sm" id="customerCity" placeholder="Enter Customer City" ng-model="selectedOrder.customerInfo.city" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="customerState">State</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="customerState" placeholder="Enter Customer State" ng-model="customerState" />
+                                                    <input type="text" class="form-control input-sm" id="customerState" placeholder="Enter Customer State" ng-model="selectedOrder.customerInfo.state" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="customerZipCode">Zipcode</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="customerZipCode" placeholder="Enter Customer Zipcode" ng-model="customerZipCode" />
+                                                    <input type="text" class="form-control input-sm" id="customerZipCode" placeholder="Enter Customer Zipcode" ng-model="selectedOrder.customerInfo.zipCode" />
                                                 </div>
                                             </div>
                                         </div>
@@ -349,31 +533,31 @@
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="pickupAddressLine1">Address Line 1</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="pickupAddressLine1" placeholder="Enter Pickup Address Line 1">
+                                                    <input type="text" class="form-control input-sm" id="pickupAddressLine1" placeholder="Enter Pickup Address Line 1" ng-model="selectedOrder.pickupContactInfo.addressLine1">
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="pickupAddressLine2">Address Line 2</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="pickupAddressLine2" placeholder="Enter Pickup Address Line 2">
+                                                    <input type="text" class="form-control input-sm" id="pickupAddressLine2" placeholder="Enter Pickup Address Line 2" ng-model="selectedOrder.pickupContactInfo.addressLine2">
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="pickupCity">City</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="pickupCity" placeholder="Enter Pickup City" ng-model="pickupCity" />
+                                                    <input type="text" class="form-control input-sm" id="pickupCity" placeholder="Enter Pickup City" ng-model="selectedOrder.pickupContactInfo.city" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="pickupState">State</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="pickupState" placeholder="Enter Pickup State" ng-model="pickupState" />
+                                                    <input type="text" class="form-control input-sm" id="pickupState" placeholder="Enter Pickup State" ng-model="selectedOrder.pickupContactInfo.state" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="pickupZipCode">Zipcode</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="pickupZipCode" placeholder="Enter Pickup Zipcode" ng-model="pickupZipCode" />
+                                                    <input type="text" class="form-control input-sm" id="pickupZipCode" placeholder="Enter Pickup Zipcode" ng-model="selectedOrder.pickupContactInfo.zipCode" />
                                                 </div>
                                             </div>
                                             
@@ -389,31 +573,31 @@
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="dropoffAddressLine1">Address Line 1</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="dropoffAddressLine1" placeholder="Enter Dropoff Address Line 1">
+                                                    <input type="text" class="form-control input-sm" id="dropoffAddressLine1" placeholder="Enter Dropoff Address Line 1" ng-model="selectedOrder.dropoffContactInfo.addressLine1">
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="dropoffAddressLine2">Address Line 2</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="dropoffAddressLine2" placeholder="Enter Dropoff Address Line 2">
+                                                    <input type="text" class="form-control input-sm" id="dropoffAddressLine2" placeholder="Enter Dropoff Address Line 2" ng-model="selectedOrder.dropoffContactInfo.addressLine2">
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="dropoffCity">City</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="dropoffCity" placeholder="Enter Dropoff City" ng-model="dropoffCity" />
+                                                    <input type="text" class="form-control input-sm" id="dropoffCity" placeholder="Enter Dropoff City" ng-model="selectedOrder.dropoffContactInfo.city" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="dropoffState">State</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="dropoffState" placeholder="Enter Dropoff State" ng-model="dropoffState" />
+                                                    <input type="text" class="form-control input-sm" id="dropoffState" placeholder="Enter Dropoff State" ng-model="selectedOrder.dropoffContactInfo.state" />
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label class="control-label col-sm-4 input-sm" for="dropoffZipCode">Zipcode</label>
                                                 <div class="col-sm-8"> 
-                                                    <input type="text" class="form-control input-sm" id="dropoffZipCode" placeholder="Enter Dropoff Zipcode" ng-model="dropoffZipCode" />
+                                                    <input type="text" class="form-control input-sm" id="dropoffZipCode" placeholder="Enter Dropoff Zipcode" ng-model="selectedOrder.dropoffContactInfo.zipCode" />
                                                 </div>
                                             </div>
                                         </div>

@@ -40,22 +40,16 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
   ];
 
   $scope.gridHeaders = [
-    "",
     "Truck name",
     "Customer name",
     "Customer phone",
     "Order date",
     "Pickup date",
     "Pickup location",
-    // "Pickup state",
-    // "Pickup zipCode",
     "Dropoff date",
     "Dropoff location",
-    // "Dropoff state",
-    // "Dropoff zipCode",
     "Payment mode",
     "Expected miles",
-    // "Expense",
     "Service fee"
   ];
 
@@ -151,11 +145,19 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     var orderToggleTemp=$scope.orderDtlToggle;
     $scope.orderDtlToggle=$scope.orderHomeToggle;
     $scope.orderHomeToggle=orderToggleTemp;
-
     
     $scope.selectedOrder = angular.copy(e);
+    /*Assign truck object instead of truck name*/
+    $scope.getTruckObjectByName(Number($scope.selectedOrder.truckId))
     console.log($scope.selectedOrder)
 
+  }
+
+  $scope.goBack2OrderList=function()
+  {
+    var orderToggleTemp=$scope.orderHomeToggle;
+    $scope.orderHomeToggle=$scope.orderDtlToggle;
+    $scope.orderDtlToggle=orderToggleTemp;
   }
 
   $scope.orderSummary = new Object();
@@ -212,39 +214,10 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
 
     console.log($scope.orderSummary.totalAmount)
   });
-
-  // $scope.total=0;
-  // $scope.filteredOrder=new Array();
-  // $scope.filterFunction = function(element) {
-  //   console.log("Filter function triggered")
-  //   console.log(new Date())
-  //   console.log(element.truckId)
-  //   console.log($scope.selectedTruckFilter)
-  //   console.log($scope.selectedPaymentModeFilter)
-
-  //   $scope.total= $scope.total+1;
-  //   var result=true;
-  //   if($scope.selectedTruckFilter==undefined && $scope.selectedPaymentModeFilter==undefined) 
-  //     return true
-  //   if($scope.selectedTruckFilter != undefined)
-  //     result=(element.truckId == $scope.selectedTruckFilter.id ? true : false);
-    
-
-  //   if($scope.selectedPaymentModeFilter != undefined)
-  //   { 
-  //     var paymentMode=$scope.selectedPaymentModeFilter.toUpperCase()
-  //     result=(element.paymentMode != null && element.paymentMode == paymentMode) ? true :false;
-  //   }
-
-  //   if(result)
-  //     $scope.filteredOrder.push(element)
-  //   console.log($scope.total)
-  //   console.log($scope.filteredOrder.length)
-  //   return result
-    
-  // };
   
-  
+  /*
+    No longer used
+  */
   $scope.orderDetailToggle="panel panel-primary collapse"
   $scope.orderSelected = function(event){
       
@@ -261,9 +234,10 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
   }
 
   $scope.addModeEnabled=false
-  $scope.onAddOrderClick = function()
+  $scope.onAddOrderClick = function(toggleValue)
   {
-    $scope.addModeEnabled=true
+    console.log(toggleValue)
+    $scope.addModeEnabled=Boolean(toggleValue);
   }
 
   $scope.response = null;
@@ -283,7 +257,7 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     
     var pickupContactInfo = null;
     var customerInfo = new Object();
-    customerInfo.firstName = $scope.selectedOrder.customerInfo.name;
+    customerInfo.firstName = $scope.selectedOrder.customerInfo.firstName;
     customerInfo.lastName = "";
     customerInfo.addressLine1 = $scope.selectedOrder.customerInfo.addressLine1;
     customerInfo.contactNumber = $scope.selectedOrder.customerInfo.phone;
@@ -331,7 +305,7 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     order.orderDate = new Date().toISOString().substring(0, 10);
     order.pickupDate = $scope.selectedOrder.pickupDate.toISOString().substring(0, 10);
     order.dropoffDate = $scope.selectedOrder.dropoffDate.toISOString().substring(0, 10);;
-    order.paymentMode = $scope.selectedOrder.selectedPaymentMode;
+    order.paymentMode = $scope.selectedOrder.paymentMode;
     order.expectedMiles = $scope.selectedOrder.expectedMiles;
     order.serviceFee = $scope.selectedOrder.serviceFee;
     //$scope.response.push(order)
@@ -362,9 +336,11 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
         method: 'POST',
         url : "http://localhost:8080/vts-core/truck/orders",
         headers: {
-          'Content-Type' : 'application/json',
-          'Accept' : 'application/json',
-          'Access-Control-Allow-Origin' : '*'
+          "Content-Type" : "application/json",
+          "Accept" : "application/json",
+          "Access-Control-Allow-Origin" : "*",
+          "Access-Control-Allow-Methods" : "GET, POST, PATCH, PUT, DELETE, OPTIONS",
+          "Access-Control-Allow-Headers" : "Origin, Content-Type, X-Auth-Token"
         },
         data: order
     })

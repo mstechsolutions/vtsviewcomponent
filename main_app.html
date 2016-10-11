@@ -110,16 +110,50 @@
                     <div class="tab-content" id="orderTabGroup">
                         <div ng-class="orderHomeToggle" id="home" role="tabpanel">
                             <div class="panel panel-default">
-                                <div class="panel-body form-inline">
-                                    <div class="form-group input-group">
-                                        <label>Truck
+                                <div class="panel-body">
+                                    <div class="row" style="text-align:center;margin-bottom:10px;">
+                                    <label class="control-label col-sm-2">Truck</label>
+                                    <label class="control-label col-sm-2">Payment Mode</label>
+                                    <label class="control-label col-sm-4" >Date Range</label>
+                                    <label class="control-label col-sm-1"></label>
+                                    
+                                    </div>
+                                    <div class="row" >
+                                        <div class="col-sm-2">
+                                            <select class="form-control input-sm" id="truckList" ng-model="selectedTruckFilter" ng-options="truck.display for truck in truckListFilter" ng-change="onFilterChange()">
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <select class="form-control input-sm" id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedPaymentModeFilter">
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <input class="form-control input-sm" type="date" id="startDateFilter" ng-model="orderStartDateFilter" />
+                                        </div>    
+                                        <div class="col-sm-2">
+                                            <input class="form-control input-sm" type="date" id="endDateFilter" ng-model="orderEndDateFilter" />
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <button class="btn btn-info btn-sm" type="button" ng-click="filterByDateRange()">Apply</button>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <button id="addOrder" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" ng-click="onAddOrderClick('True')" >Add order</button>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- <div class="form-group input-group" >
+                                        <label for="truckList">Truck</label>
+                                        
                                             <select id="truckList" ng-model="selectedTruckFilter" ng-options="truck.display for truck in truckListFilter" ng-change="onFilterChange()">
                                             </select>
-                                        </label>
-                                        <label>Payment Mode
+                                        
+
+                                        <label for="paymentModeList">Payment Mode</label>
+                                        
                                             <select id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedPaymentModeFilter">
-                                            </select>
-                                        </label>
+                                        
+                                        </div>
                                     </div>
                                     
                                     <div class="form-group input-group">
@@ -132,11 +166,11 @@
                                             <button class="btn btn-info btn-sm" type="button" ng-click="filterByDateRange()">Apply</button>
                                         </span>    
                                     </div>
-                                    <div class="form-group" >
+                                    <div class="form-group input-group" >
                                        
-                                        <button id="addOrder" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" ng-click="onAddOrderClick()" >Add order</button>
+                                        <button id="addOrder" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" ng-click="onAddOrderClick('True')" >Add order</button>
                                        
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                             <br/>
@@ -147,11 +181,10 @@
                                 <!-- <tr ng-repeat="order in filteredOrders = (response | filter: filterFunction)"> -->
                                 <tr ng-repeat="order in filteredOrders = (response | filter:selectedTruckFilter.id | filter:selectedPaymentModeFilter)" ng-click="selectedTableRow(order)">
                                     
-                                    <td>
+                                    <!-- <td>
                                         <input type="radio" name="orderDetailSelection" ng-model="$parent.orderDetailSelection" ng-change="orderSelected($event)" ng-value="order">
-                                        <!-- {{order.truckName}} -->
                                         </input>
-                                    </td>
+                                    </td> -->
                                     <td>{{ order.truckName }}</td>
                                     <td>{{ order.customerInfo.firstName }}</td>
                                     <td>{{ order.customerInfo.contactNumber }}</td>
@@ -162,16 +195,15 @@
                                     <td>{{ order.dropoffContactInfo.state + ", " + order.dropoffContactInfo.zipCode  }}</td>
                                     <td>{{ order.paymentMode }}</td>
                                     <td>{{ order.expectedMiles }}</td>
-                                    <!-- <td>{{ order.expense }}</td> -->
                                     <td>{{ order.serviceFee }}</td>
                                 </tr>
                             </table>
                         </div>
                         <div ng-class="orderDtlToggle" id="profile" role="tabpanel">
-                            <div class="container" style="width:60%;max-height:300px">
+                            <div class="container" style="width:60%;margin-bottom:50px">
                                 <div class="row detailControlBar">
-                                    <button id="back2OrderHome" type="button" class="btn btn-info btn-sm">Back</button>
-                                    <button id="editOrder" type="button" class="btn btn-info btn-sm">Edit</button>
+                                    <button id="back2OrderHome" type="button" class="btn btn-info btn-sm" ng-click="goBack2OrderList()">Back</button>
+                                    <button id="editOrder" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" ng-click="onAddOrderClick('False')">Edit</button>
                                 </div>
                                 <div class="row detailBox" style="border-top-style:solid">
                                     <label class="col-sm-6 detailBoxCell" >Order Id</label>
@@ -302,80 +334,8 @@
                         </div>
                     </div>
                 </div><!--Order Container-->
-
-                
-                
-                <div ng-class="orderDetailToggle">
-                    <div class="panel-heading">Order Details</div>
-                    <div class="row" >
-                        <div class="col-sm-4" style="padding-left:20px" >
-                            
-                            <div>Customer details</div>
-                            
-                            <div class="row">
-                                <label class="col-sm-4" >Contact name</label>
-                                <label class="col-sm-1" >: </label>
-                                <label class="col-sm-6" >{{selectedOrder.customerInfo.name}}</label>
-                            </div>
-                            <div class="row">
-                                <label class="col-sm-4" >Address</label>
-                                <label class="col-sm-1" >: </label>
-                                <label class="col-sm-6" >{{selectedOrder.customerInfo.address + ", " +
-                                selectedOrder.customerInfo.state + ", " +
-                                selectedOrder.customerInfo.country + ", " +
-                                selectedOrder.customerInfo.zipCode }}</label>
-                            </div>
-                            <div class="row">
-                                <label class="col-sm-4" >Contact number</label>
-                                <label class="col-sm-1" >: </label>
-                                <label class="col-sm-6" >{{selectedOrder.customerInfo.phone}}</label>
-                            </div>
-                            
-                        </div>
-                        <div class="col-sm-4">
-                            <div>Pickup details</div>
-                            <div class="row">
-                                <label class="col-sm-4" >Contact name</label>
-                                <label class="col-sm-1" >: </label>
-                                <label class="col-sm-6" >2018738981</label>
-                            </div>
-                            <div class="row">
-                                <label class="col-sm-4" >Address</label>
-                                <label class="col-sm-1" >: </label>
-                                <label class="col-sm-6" >4411 breezy bay cir, Apt 305, Henrico, VA 23233</label>
-                            </div>
-                            <div class="row">
-                                <label class="col-sm-4" >Contact number</label>
-                                <label class="col-sm-1" >: </label>
-                                <label class="col-sm-6" >2018738981</label>
-                            </div>
-                            
-                        </div>    
-                        <div class="col-sm-4" >
-                            <div>Dropoff details</div>
-                            <div class="row">
-                                <label class="col-sm-4" >Contact name</label>
-                                <label class="col-sm-1" >: </label>
-                                <label class="col-sm-6" >2018738981</label>
-                            </div>
-                            <div class="row">
-                                <label class="col-sm-4" >Address</label>
-                                <label class="col-sm-1" >: </label>
-                                <label class="col-sm-6" >4411 breezy bay cir, Apt 305, Henrico, VA 23233</label>
-                            </div>
-                            <div class="row">
-                                <label class="col-sm-4" >Contact number</label>
-                                <label class="col-sm-1" >: </label>
-                                <label class="col-sm-6" >2018738981</label>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div>
             </div>    
             
-
-
             <!-- Modal -->
             <div id="myModal" class="modal fade" role="dialog">
               <div class="modal-dialog">
@@ -393,7 +353,7 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="orderId">Order Id</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control input-sm" ng-model="orderId" id="orderId" placeholder="Enter Order Id" ng-disabled="true">
+                                        <input type="text" class="form-control input-sm" ng-model="selectedOrder.orderId" id="orderId" placeholder="Enter Order Id" ng-disabled="true">
                                     </div>
                                 </div>
 
@@ -415,25 +375,25 @@
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="customerName">Customer Name</label>
                                     <div class="col-sm-8">
-                                        <input type="text" class="form-control input-sm" ng-model="selectedOrder.customerInfo.name" id="customerName" placeholder="Enter Customer Name">
+                                        <input type="text" class="form-control input-sm" ng-model="selectedOrder.customerInfo.firstName" id="customerName" placeholder="Enter Customer Name">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="customerContact">Customer Contact</label>
                                     <div class="col-sm-8"> 
-                                        <input type="text" class="form-control input-sm" id="customerContact" ng-model="selectedOrder.customerInfo.phone" placeholder="Enter Customer contact number" />
+                                        <input type="text" class="form-control input-sm" id="customerContact" ng-model="selectedOrder.customerInfo.contactNumber" placeholder="Enter Customer contact number" />
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4  input-sm" for="pickupDate">Pickup Date</label>
                                     <div class="col-sm-8"> 
-                                        <input type="date" class="form-control  input-sm" id="pickupDate" ng-model="selectedOrder.pickupDate" />
+                                        <input type="date" class="form-control  input-sm" id="pickupDate" ng-model="selectedOrder.pickupDate" ng-value="selectedOrder.pickupDate"/>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="dropoffDate">Dropoff Date</label>
                                     <div class="col-sm-8"> 
-                                        <input type="date" class="form-control  input-sm" id="dropoffDate" ng-model="selectedOrder.dropoffDate" />
+                                        <input type="date" class="form-control  input-sm" id="dropoffDate" ng-model="selectedOrder.dropoffDate" ng-value="selectedOrder.dropoffDate"/>
                                     </div>
                                 </div>
 

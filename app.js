@@ -1,5 +1,5 @@
 
-var app = angular.module('mainApp', []);
+var app = angular.module('mainApp', ['ngMessages']);
 
 app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
 
@@ -130,6 +130,14 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     queryParameters.startDate=$scope.orderStartDateFilter.toISOString().substring(0, 10);
     queryParameters.enddate=$scope.orderEndDateFilter.toISOString().substring(0, 10);
     $scope.getOrders(queryParameters);
+    
+  }
+
+  $scope.onCustomerContactChange = function()
+  {
+    $scope.customerContactChangeValid = ($scope.selectedOrder.customerInfo.contactNumber != null && 
+    $scope.selectedOrder.customerInfo.contactNumber.length == 10 && 
+    !isNaN(Number($scope.selectedOrder.customerInfo.contactNumber)))
     
   }
 

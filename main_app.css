@@ -107,3 +107,8 @@ ul.list-group:after {
 	margin-bottom: 10px;
 }
 
+.text-danger
+{
+	font-size: 12px;
+}
+

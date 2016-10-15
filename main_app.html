@@ -350,7 +350,7 @@
                             <li><a data-toggle="tab" href="#vehicleInfo" ng-show="addModeEnabled">Vehicle</a></li>
                         </ul>
                         <div id="intakeTabContent" class="tab-content">
-                            <div id="primaryInfo" class="tab-pane fade in active">
+                            <div id="primaryInfo" class="tab-pane fade in active"   >
                                 <div class="form-group">
                                     <label class="control-label col-sm-4 input-sm" for="orderId">Order Id</label>
                                     <div class="col-sm-6">
@@ -377,16 +377,25 @@
                                         <div class="text-danger" ng-message="required">*</div>
                                     </div>
                                 </div>
-                                <div class="form-group" ng-class="orderForm.customerName.$valid? 'has-success' : ''">
-                                    <label class="control-label col-sm-4 input-sm" for="customerName">Customer Name</label>
-                                    <div class="col-sm-6">
-                                        <input type="text" class="form-control input-sm" ng-model="selectedOrder.customerInfo.firstName" name="customerName" id="customerName" placeholder="Enter Customer Name" required
-                                        />
-                                    </div>
-                                    <div ng-messages="orderForm.customerName.$error">
-                                        <div class="text-danger" ng-message="required">*</div>
-                                    </div>
+
+                                <div class="row center-block">
+                                <div class="form-group col-sm-6" ng-class="orderForm.customerName.$valid? 'has-success' : ''">
+                                    <label class="control-label input-sm" for="customerName">First Name</label>
+                                    <span ng-class="col-sm-1" ng-messages="orderForm.customerName.$error">
+                                        <span class="text-danger" ng-message="required">*</span>
+                                    </span>
+                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.customerInfo.firstName" name="customerName" id="customerName" placeholder="Enter Customer Name" required />           
                                 </div>
+
+                                <div class="form-group col-sm-6 pull-right" ng-class="orderForm.customerLastName.$valid? 'has-success' : ''">
+                                    <label class="control-label input-sm" for="customerLastName">Last Name</label>
+                                    <span ng-class="col-sm-1" ng-messages="orderForm.customerLastName.$error">
+                                        <span class="text-danger" ng-message="required">*</span>
+                                    </span>
+                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.customerInfo.lastName" name="customerLastName" id="customerLastName" placeholder="Enter Customer Name" required />
+                                </div>
+                                </div>
+
                                 <div class="form-group" ng-class="orderForm.customerContact.$valid? 'has-success' : ''">
                                     <label class="control-label col-sm-4 input-sm" for="customerContact">Customer Contact</label>
                                     <div class="col-sm-6" > 

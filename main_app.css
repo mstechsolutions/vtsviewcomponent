@@ -112,3 +112,10 @@ ul.list-group:after {
 	font-size: 12px;
 }
 
+.center-block {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+

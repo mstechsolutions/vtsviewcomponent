@@ -1,7 +1,7 @@
 
 var app = angular.module('mainApp', ['ngMessages']);
 
-app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
+app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, $filter) {
 
   $scope.baseServiceUrl="http://localhost:8080"
   $scope.isPickupContactSameAsCC = true;
@@ -133,6 +133,9 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     
   }
 
+  /*
+    Not used
+  */
   $scope.onCustomerContactChange = function()
   {
     $scope.customerContactChangeValid = ($scope.selectedOrder.customerInfo.contactNumber != null && 
@@ -155,6 +158,19 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     $scope.orderHomeToggle=orderToggleTemp;
     
     $scope.selectedOrder = angular.copy(e);
+    
+    var customerContactNumber=Number($scope.selectedOrder.customerInfo.contactNumber);
+    if(!isNaN(customerContactNumber))
+      $scope.selectedOrder.customerInfo.contactNumber=customerContactNumber;
+
+    /* Returned order Date format is different E.g. Oct 10, 2016*/
+    $scope.selectedOrder.orderDate=new Date($scope.selectedOrder.orderDate);
+    $scope.selectedOrder.pickupDate=new Date($scope.selectedOrder.pickupDate);
+    $scope.selectedOrder.dropoffDate=new Date($scope.selectedOrder.dropoffDate);
+
+    //Display added vehicles
+    $scope.vehicles=$scope.selectedOrder.vehicles;
+
     /*Assign truck object instead of truck name*/
     $scope.getTruckObjectByName(Number($scope.selectedOrder.truckId))
     console.log($scope.selectedOrder)
@@ -192,13 +208,13 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     {
       if(order.orderStatus !=null && order.orderStatus.toUpperCase() != "DEFERRED")
       {
-        if(!order.isPaid)
+        if(!order.paid)
         {
           $scope.orderSummary.totalOrderUnPaid.value += order.serviceFee;
           if($scope.orderSummary.totalOrderUnPaid.value > 0)
             $scope.orderSummary.totalOrderUnPaid.alert=$scope.makeAlertStyle($scope.ALERT_WARNING)
         }
-        if(order.isPaid)
+        if(order.paid)
         {
           $scope.orderSummary.totalOrderPaid.value += order.serviceFee;
           if($scope.orderSummary.totalOrderPaid.value > 0)
@@ -207,7 +223,7 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
         }
 
 
-        if(order.orderStatus.toUpperCase() == "COMPLETED" && !order.isPaid)
+        if(order.orderStatus.toUpperCase() == "COMPLETED" && !order.paid)
         {
           $scope.orderSummary.totalUnpaidButOrderCompleted.value += order.serviceFee;
           if($scope.orderSummary.totalUnpaidButOrderCompleted.value > 0)
@@ -226,6 +242,7 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
   /*
     No longer used
   */
+
   $scope.orderDetailToggle="panel panel-primary collapse"
   $scope.orderSelected = function(event){
       
@@ -245,6 +262,12 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
   $scope.onAddOrderClick = function(toggleValue)
   {
     console.log(toggleValue)
+    if(Boolean(toggleValue))
+    {
+      console.log("add clicked", toggleValue)
+      $scope.selectedOrder=new Object();
+      $scope.selectedOrder.orderId=0;
+    }
     $scope.addModeEnabled=Boolean(toggleValue);
   }
 
@@ -257,18 +280,24 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     console.log("at add order testing")
     console.log($scope.selectedOrder.truckName)
     console.log($scope.selectedOrder.paymentMode)
+    console.log($scope.selectedOrder.orderId)
 
     var order = new Object();
+    order.orderId=$scope.selectedOrder.orderId;
     order.truckId=$scope.selectedOrder.truckName.id
     order.truckName=$scope.selectedOrder.truckName.name;
+    
+    //Need to lookout
     order.vehicles=$scope.vehicles;
     
     var pickupContactInfo = null;
     var customerInfo = new Object();
     customerInfo.firstName = $scope.selectedOrder.customerInfo.firstName;
-    customerInfo.lastName = "";
+    customerInfo.lastName = $scope.selectedOrder.customerInfo.lastName;
     customerInfo.addressLine1 = $scope.selectedOrder.customerInfo.addressLine1;
-    customerInfo.contactNumber = $scope.selectedOrder.customerInfo.phone;
+    customerInfo.addressLine2 = $scope.selectedOrder.customerInfo.addressLine2;
+    customerInfo.contactNumber = $scope.selectedOrder.customerInfo.contactNumber;
+    customerInfo.emailAddress = $scope.selectedOrder.customerInfo.emailAddress;
     customerInfo.state = $scope.selectedOrder.customerInfo.state;
     customerInfo.zipCode = $scope.selectedOrder.customerInfo.zipCode;
     customerInfo.city = $scope.selectedOrder.customerInfo.city;
@@ -282,12 +311,11 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     else
     {
       pickupContactInfo = new Object();
-
-      //Not enabled yet
-      pickupContactInfo.firstName = "";
-      pickupContactInfo.lastName = "";
-      pickupContactInfo.contactNumber = "";
+      pickupContactInfo.firstName = $scope.selectedOrder.pickupContactInfo.firstName;
+      pickupContactInfo.lastName = $scope.selectedOrder.pickupContactInfo.lastName;
+      pickupContactInfo.contactNumber = $scope.selectedOrder.pickupContactInfo.contactNumber;
       pickupContactInfo.addressLine1 = $scope.selectedOrder.pickupContactInfo.addressLine1;
+      pickupContactInfo.addressLine2 = $scope.selectedOrder.pickupContactInfo.addressLine2;
       pickupContactInfo.state = $scope.selectedOrder.pickupContactInfo.state;
       pickupContactInfo.zipCode = $scope.selectedOrder.pickupContactInfo.zipCode;
       pickupContactInfo.city = $scope.selectedOrder.pickupContactInfo.city;
@@ -296,27 +324,27 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
     order.pickupContactInfo = pickupContactInfo;
   
     var dropoffContactInfo = new Object();
-    //Not enabnled yet
-    dropoffContactInfo.firstName = "";
-    dropoffContactInfo.lastName = "";
-    pickupContactInfo.contactNumber = "";
-    
+    dropoffContactInfo.firstName = $scope.selectedOrder.dropoffContactInfo.firstName;
+    dropoffContactInfo.lastName = $scope.selectedOrder.dropoffContactInfo.lastName;
+    dropoffContactInfo.contactNumber = $scope.selectedOrder.dropoffContactInfo.contactNumber;
     dropoffContactInfo.addressLine1 = $scope.selectedOrder.dropoffContactInfo.addressLine1;
-    
+    dropoffContactInfo.addressLine2 = $scope.selectedOrder.dropoffContactInfo.addressLine2;
     dropoffContactInfo.state = $scope.selectedOrder.dropoffContactInfo.state;
     dropoffContactInfo.zipCode = $scope.selectedOrder.dropoffContactInfo.zipCode;
     dropoffContactInfo.city = $scope.selectedOrder.dropoffContactInfo.city;
     order.dropoffContactInfo = dropoffContactInfo;
 
-    // order.orderDate = $scope.orderDate;
-
-    order.orderDate = new Date().toISOString().substring(0, 10);
+    order.orderStatus = $scope.selectedOrder.orderStatus;
+    // order.orderDate = new Date().toISOString().substring(0, 10);
+    order.orderDate = $filter('date')(new Date(), 'yyyy-MM-dd');
     order.pickupDate = $scope.selectedOrder.pickupDate.toISOString().substring(0, 10);
     order.dropoffDate = $scope.selectedOrder.dropoffDate.toISOString().substring(0, 10);;
     order.paymentMode = $scope.selectedOrder.paymentMode;
     order.expectedMiles = $scope.selectedOrder.expectedMiles;
     order.serviceFee = $scope.selectedOrder.serviceFee;
-    //$scope.response.push(order)
+    order.paid = $scope.selectedOrder.paid;
+
+    console.log(JSON.stringify(order))
     $scope.upsertOrder(order);
 
     //Hide the modal if all input given is valid
@@ -344,19 +372,22 @@ app.controller('mainCtrl', ['$scope','$http', function($scope, $http) {
         method: 'POST',
         url : "http://localhost:8080/vts-core/truck/orders",
         headers: {
-          "Content-Type" : "application/json",
-          "Accept" : "application/json",
-          "Access-Control-Allow-Origin" : "*",
-          "Access-Control-Allow-Methods" : "GET, POST, PATCH, PUT, DELETE, OPTIONS",
-          "Access-Control-Allow-Headers" : "Origin, Content-Type, X-Auth-Token"
+          "Content-Type": "application/json",
+          "Accept" : "application/json"
         },
         data: order
     })
     .then(
-        function success(data){
-          $scope.selectedOrder = null;
-          $scope.vehicles = null;
-          console.log(data);
+        function success(response){
+          if($scope.addModeEnabled)
+          {
+            $scope.selectedOrder = null;
+            $scope.response.push(response.data)
+          }
+          else
+            $scope.selectedOrder = response.data;
+          
+          console.log(response);
         },
         function error(error){
           console.log(error)

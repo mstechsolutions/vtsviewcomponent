@@ -218,9 +218,9 @@
                                     
                                 </div>
                                 <div class="row detailBox">
-                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.customerInfo.orderStatus}}</label>
-                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.customerInfo.isPaid}}</label>
-                                    <label class="col-sm-4 detailBoxCellValue" >{{selectedOrder.customerInfo.paymentMode}}</label>
+                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.orderStatus}}</label>
+                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.paid}}</label>
+                                    <label class="col-sm-4 detailBoxCellValue" >{{selectedOrder.paymentMode}}</label>
                                 </div>
                                 <div class="row detailBox">
                                     
@@ -229,9 +229,9 @@
                                     <label class="col-sm-4 detailBoxCellValue" >Dropoff date</label>
                                 </div>
                                 <div class="row detailBox">
-                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.orderDate}}</label>
-                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.pickupDate}}</label>
-                                    <label class="col-sm-4 detailBoxCellValue" >{{selectedOrder.dropoffDate}}</label>
+                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.orderDate | date:'MM/dd/yyyy' }}</label>
+                                    <label class="col-sm-4 detailBoxCell" >{{selectedOrder.pickupDate | date:'MM/dd/yyyy' }}</label>
+                                    <label class="col-sm-4 detailBoxCellValue" >{{selectedOrder.dropoffDate| date:'MM/dd/yyyy' }}</label>
                                 </div>
                                 
                                 <div class="row detailBoxHdr">
@@ -251,7 +251,6 @@
                                     <label class="col-sm-6 detailBoxCellValue" >{{selectedOrder.customerInfo.addressLine1 + " " +
                                         selectedOrder.customerInfo.addressLine2 + ", " +
                                         selectedOrder.customerInfo.state + ", " +
-                                        selectedOrder.customerInfo.country + ", " +
                                         selectedOrder.customerInfo.zipCode }}</label>
                                 </div>
                                 <div class="row detailBox">
@@ -265,25 +264,24 @@
                                     <label class="col-sm-6 detailBoxCell" >Contact name</label>
                                     <label class="col-sm-6 detailBoxCellValue" >
                                         {{
-                                            selectedOrder.pickupCustomerInfo.firstName + " " +
-                                            selectedOrder.pickupCustomerInfo.lastName
+                                            selectedOrder.pickupContactInfo.firstName + " " +
+                                            selectedOrder.pickupContactInfo.lastName
                                         }}
                                     </label>
                                 </div>
                                 <div class="row detailBox">
                                     <label class="col-sm-6 detailBoxCell" >Address</label>
                                     <label class="col-sm-6 detailBoxCellValue" >
-                                        {{selectedOrder.pickupCustomerInfo.addressLine1 + " " +
-                                        selectedOrder.pickupCustomerInfo.addressLine2 + ", " +
-                                        selectedOrder.pickupCustomerInfo.state + ", " +
-                                        selectedOrder.pickupCustomerInfo.country + ", " +
-                                        selectedOrder.pickupCustomerInfo.zipCode }}
+                                        {{selectedOrder.pickupContactInfo.addressLine1 + " " +
+                                        selectedOrder.pickupContactInfo.addressLine2 + ", " +
+                                        selectedOrder.pickupContactInfo.state + ", " +
+                                        selectedOrder.pickupContactInfo.zipCode }}
                                     </label>
                                 </div>
                                 <div class="row detailBox">
                                     <label class="col-sm-6 detailBoxCell" >Contact number</label>
                                     <label class="col-sm-6 detailBoxCellValue" >
-                                        {{selectedOrder.pickupCustomerInfo.contactNumber}}
+                                        {{selectedOrder.pickupContactInfo.contactNumber}}
                                     </label>
                                 </div>
                                 <div class="row detailBoxHdr">
@@ -293,25 +291,24 @@
                                     <label class="col-sm-6 detailBoxCell" >Contact name</label>
                                     <label class="col-sm-6 detailBoxCellValue" >
                                         {{
-                                            selectedOrder.dropoffCustomerInfo.firstName + " " +
-                                            selectedOrder.dropoffCustomerInfo.lastName
+                                            selectedOrder.dropoffContactInfo.firstName + " " +
+                                            selectedOrder.dropoffContactInfo.lastName
                                         }}
                                     </label>
                                 </div>
                                 <div class="row detailBox">
                                     <label class="col-sm-6 detailBoxCell" >Address</label>
                                     <label class="col-sm-6 detailBoxCellValue" >
-                                        {{selectedOrder.dropoffCustomerInfo.addressLine1 + " " +
-                                        selectedOrder.dropoffCustomerInfo.addressLine2 + ", " +
-                                        selectedOrder.dropoffCustomerInfo.state + ", " +
-                                        selectedOrder.dropoffCustomerInfo.country + ", " +
-                                        selectedOrder.dropoffCustomerInfo.zipCode }}
+                                        {{selectedOrder.dropoffContactInfo.addressLine1 + " " +
+                                        selectedOrder.dropoffContactInfo.addressLine2 + ", " +
+                                        selectedOrder.dropoffContactInfo.state + ", " +
+                                        selectedOrder.dropoffContactInfo.zipCode }}
                                     </label>
                                 </div>
                                 <div class="row detailBox">
                                     <label class="col-sm-6 detailBoxCell" >Contact number</label>
                                     <label class="col-sm-6 detailBoxCellValue" >
-                                        {{selectedOrder.dropoffCustomerInfo.contactNumber}}
+                                        {{selectedOrder.dropoffContactInfo.contactNumber}}
                                     </label>
                                 </div>
                                 <div class="row detailBoxHdr">
@@ -346,7 +343,7 @@
                     <form class="form-horizontal" ng-submit="addOrderSubmit()" id="orderForm" name="orderForm">
                         <ul class="nav nav-tabs">
                             <li class="active"><a data-toggle="tab" href="#primaryInfo">Primary</a></li>
-                            <li><a data-toggle="tab" href="#addressInfo" ng-show="addModeEnabled">Address</a></li>
+                            <li><a data-toggle="tab" href="#addressInfo" ng-show="addModeEnabled" >Address</a></li>
                             <li><a data-toggle="tab" href="#vehicleInfo" ng-show="addModeEnabled">Vehicle</a></li>
                         </ul>
                         <div id="intakeTabContent" class="tab-content">
@@ -472,8 +469,9 @@
                                 <div class="form-group" ng-class="orderForm.paidStatus.$valid? 'has-success' : ''">
                                     <label class="control-label col-sm-4 input-sm" for="paidStatus">Paid status</label>
                                     <div class="col-sm-6">
-                                        <select class="form-control input-sm" name="paidStatus" id="paidStatus" ng-options="paidStatus for paidStatus in paidStatusList" ng-model="selectedOrder.isPaid" required>
-                                        </select>
+                                        <!-- <select class="form-control input-sm" name="paidStatus" id="paidStatus" ng-options="paidStatus for paidStatus in paidStatusList" ng-model="selectedOrder.isPaid" required>
+                                        </select> -->
+                                        <input type=checkbox name="paidStatus" id="paidStatus" ng-model="selectedOrder.paid" required />
                                     </div>
                                     <div ng-messages="orderForm.paidStatus.$error">
                                         <div class="text-danger" ng-message="required">*</div>
@@ -495,6 +493,7 @@
                             </div>
                             <div id="addressInfo" class="tab-pane fade">
                                 <div class="panel-group">
+                                    <fieldset ng-disabled="!addModeEnabled">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
@@ -674,7 +673,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div>
-                                                        <input type="number" class="form-control input-sm" name="dropoffContact" ng-model="selectedOrder.dropoffContactInfo.contactNumber" placeholder="Enter contact number" ng-required="true" ng-minlength="10" ng-maxlength="10" />
+                                                        <input type="number" class="form-control input-sm" name="dropoffContact" ng-model="selectedOrder.dropoffContactInfo.contactNumber" placeholder="Enter contact number" required ng-minlength="10" ng-maxlength="10" />
                                                         <span ng-messages="orderForm.dropoffContact.$error">
                                                             <span class="text-danger" ng-message="minlength">[Expected 10 digits exactly]</span>
                                                         </span>
@@ -687,7 +686,7 @@
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffEmail.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
-                                                    <input type="email" class="form-control input-sm" name="dropoffEmail" ng-model="selectedOrder.dropoffContactInfo.emailAddress" placeholder="Enter email address" ng-required="true" />
+                                                    <input type="email" class="form-control input-sm" name="dropoffEmail" ng-model="selectedOrder.dropoffContactInfo.emailAddress" placeholder="Enter email address" required />
                                                 </div>
                                             </div>
                                             <div class="row contact-control">
@@ -697,13 +696,13 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" name="dropoffAddressLine1" id="dropoffAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.dropoffContactInfo.addressLine1" required>
+                                                        <input type="text" class="form-control input-sm" name="dropoffAddressLine1" id="dropoffAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.dropoffContactInfo.addressLine1" required />
                                                     </div>
                                                 </div>
                                                 <div class="form-group col-sm-5 pull-right">
                                                     <label class="control-label input-sm" for="dropoffAddressLine2">Address Line 2</label>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" id="dropoffAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.dropoffContactInfo.addressLine2">
+                                                        <input type="text" class="form-control input-sm" id="dropoffAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.dropoffContactInfo.addressLine2" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -715,7 +714,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" name="dropoffCity" id="dropoffCity" placeholder="Enter City" ng-model="selectedOrder.dropoffContactInfo.city" required />
+                                                        <input type="text" class="form-control input-sm" name="dropoffCity" id="dropoffCity" placeholder="Enter City" ng-model="selectedOrder.dropoffContactInfo.city" required  />
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-4 col-sm-offset-1">
@@ -724,7 +723,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" name="dropoffState" id="dropoffState" placeholder="Enter State" ng-model="selectedOrder.dropoffContactInfo.state" required />
+                                                        <input type="text" class="form-control input-sm" name="dropoffState" id="dropoffState" placeholder="Enter State" ng-model="selectedOrder.dropoffContactInfo.state" required  />
                                                     </div>
                                                 </div>
                                                 <div class="form-group col-sm-4 pull-right">
@@ -738,9 +737,11 @@
                                                 </div>
                                             </div>
 
+
                                         </div>
                                     </div>
                                 </div>
+                                </fieldset>
                             </div>        
                             <div id="vehicleInfo" class="tab-pane fade">
                                 <table class="table table-striped">
@@ -761,11 +762,12 @@
                                 </table>
                                 <p style="text-align:center" ng-show="vehicles.length <= 0">No vehicles added.</p>
                                 <div class="panel panel-default">
+                                    <fieldset ng-disabled="!addModeEnabled">
                                     <div class="panel-heading">Add Vehicle</div>
                                     <div class="form-group" style="margin-top:10px">
                                         <label class="control-label col-sm-3 input-sm" for="vin">VIN</label>
                                         <div class="col-sm-8"> 
-                                            <input type="text" class="form-control input-sm" name="vin" id="vin" placeholder="Enter VIN" ng-model="vin" required />
+                                            <input type="text" class="form-control input-sm" name="vin" id="vin" placeholder="Enter VIN" ng-model="vin"  />
                                         </div>
                                         <!-- <span ng-class="col-sm-1" ng-messages="orderForm.vin.$error">
                                             <span class="text-danger" ng-message="required">*</span>
@@ -774,30 +776,31 @@
                                     <div class="form-group">
                                         <label class="control-label col-sm-3 input-sm" for="make">Make</label>
                                         <div class="col-sm-8"> 
-                                            <input type="text" class="form-control input-sm" name="make" id="make" placeholder="Enter Make" ng-model="make" required />
+                                            <input type="text" class="form-control input-sm" name="make" id="make" placeholder="Enter Make" ng-model="make" ng-required="vehicles.length == 0" />
                                         </div>
-                                        <!-- <span ng-class="col-sm-1" ng-messages="orderForm.make.$error">
+                                        <span ng-class="col-sm-1" ng-messages="orderForm.make.$error">
                                             <span class="text-danger" ng-message="required">*</span>
-                                        </span> -->
+                                        </span>
                                     </div>
                                     <div class="form-group">
                                         <label class="control-label col-sm-3 input-sm" for="model">Model</label>
                                         <div class="col-sm-8"> 
-                                            <input type="text" class="form-control input-sm" name="model" id="model" placeholder="Enter Model" ng-model="model" required />
+                                            <input type="text" class="form-control input-sm" name="model" id="model" placeholder="Enter Model" ng-model="model" ng-required="vehicles.length == 0" />
                                         </div>
-                                        <!-- <span ng-class="col-sm-1" ng-messages="orderForm.model.$error">
+                                        <span ng-class="col-sm-1" ng-messages="orderForm.model.$error">
                                             <span class="text-danger" ng-message="required">*</span>
-                                        </span> -->
+                                        </span>
                                     </div>
                                     <div class="form-group">
                                         <label class="control-label col-sm-3 input-sm" for="year">Year</label>
                                         <div class="col-sm-8"> 
-                                            <input type="number" class="form-control input-sm" name="year" id="year" placeholder="Enter Year" ng-model="year" required />
+                                            <input type="number" class="form-control input-sm" name="year" id="year" placeholder="Enter Year" ng-model="year" ng-required="vehicles.length == 0" />
                                         </div>
-                                        <!-- <span ng-class="col-sm-1" ng-messages="orderForm.year.$error">
+                                        <span ng-class="col-sm-1" ng-messages="orderForm.year.$error">
                                             <span class="text-danger" ng-message="required">*</span>
-                                        </span> -->
+                                        </span>
                                     </div>
+                                    </fieldset>
 
                                 </div>
                                 
@@ -808,7 +811,7 @@
                     <div id="actionBar">
                         <button id="nextOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Back</button>
                         <button id="prevOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Next</button>
-                        <input type="submit" id="addOrderButton" class="btn btn-info btn-sm" ng-disabled="!orderForm.$valid" />
+                        <input type="submit" id="addOrderButton" class="btn btn-info btn-sm" ng-disabled="" />
                         <!-- ng-disabled="!orderForm.$valid" -->
                     </div>
                     </form>   

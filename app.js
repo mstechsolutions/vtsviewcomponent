@@ -3,7 +3,6 @@ var app = angular.module('mainApp', ['ngMessages']);
 
 app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, $filter) {
 
-  $scope.baseServiceUrl="http://localhost:8080"
   $scope.isPickupContactSameAsCC = true;
 
   $scope.ALERT_BASE="list-group-item list-group-item-action";
@@ -13,6 +12,8 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   $scope.ALERT_WARNING="list-group-item-warning";
 
   $scope.selectedOrder=null;
+
+  $scope.baseServiceUrl="http://custom-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
 
   // $scope.truckSummaryHeaders = [
   //   "Truck Name",
@@ -128,7 +129,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     console.log($scope.orderStartDateFilter)
     var queryParameters = new Object();
     queryParameters.startDate=$scope.orderStartDateFilter.toISOString().substring(0, 10);
-    queryParameters.enddate=$scope.orderEndDateFilter.toISOString().substring(0, 10);
+    queryParameters.endDate=$scope.orderEndDateFilter.toISOString().substring(0, 10);
     $scope.getOrders(queryParameters);
     
   }
@@ -370,7 +371,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     $http(
       {
         method: 'POST',
-        url : "http://localhost:8080/vts-core/truck/orders",
+        url : $scope.baseServiceUrl.concat("truck/orders"),
         headers: {
           "Content-Type": "application/json",
           "Accept" : "application/json"
@@ -400,7 +401,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
     $http({
       method: "GET",
-      url : "http://localhost:8080/vts-core/truck/orders",
+      url : $scope.baseServiceUrl.concat("truck/orders"),
       headers: {
         "Content-Type" : "application/json",
         "Accept" : "application/json"
@@ -420,7 +421,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   }
 
-  $http.get("http://localhost:8080/vts-core/truck/orders")
+  $http.get($scope.baseServiceUrl.concat("truck/orders"))
     .then(
         function success(response){          
           $scope.response = response.data;
@@ -433,7 +434,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     );
 
   $scope.tripLogs = null;
-  $http.get("http://localhost:8080/vts-core/trips")
+  $http.get($scope.baseServiceUrl.concat("trips"))
     .then(
         function success(response){
           console.log("success")

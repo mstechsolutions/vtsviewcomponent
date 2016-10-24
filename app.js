@@ -13,7 +13,8 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   $scope.selectedOrder=null;
 
-  $scope.baseServiceUrl="http://custom-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
+  $scope.baseServiceUrl="http://localhost:8080/vts-core/";
+  // $scope.baseServiceUrl="http://custom-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
 
   // $scope.truckSummaryHeaders = [
   //   "Truck Name",
@@ -50,12 +51,12 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     "Dropoff date",
     "Dropoff location",
     "Payment mode",
-    "Expected miles",
+    "Order status",
     "Service fee"
   ];
 
   $scope.orderStatusList = [
-      "Not Started", "In-Progress", "Completed", "Deferred"
+      "Not Started", "In-Progress", "Completed", "Cancelled"
   ]
 
   $scope.paidStatusList = [
@@ -64,8 +65,8 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   $scope.truckListFilter = [
     {id:0, name: '', display: "All"},
-    {id:1, name: 'Maximus', display: 'Maximus'},
-    {id:10, name: 'Avengers', display: 'Avengers'},
+    {id:1, name: 'Truck 1', display: 'Truck 1'},
+    {id:2, name: 'Truck 2', display: 'Truck 2'},
     {id:300, name: 'XMen', display: 'XMen'}
   ];
 
@@ -76,7 +77,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   ];
 
   $scope.paymentModeList = [
-    "COD", "Debit", "Credit", "Check"
+    "","COD", "Debit", "Credit", "Check"
   ];  
 
   $scope.getTruckObjectByName = function(truckId)
@@ -207,7 +208,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
     angular.forEach($scope.filteredOrders, function(order)
     {
-      if(order.orderStatus !=null && order.orderStatus.toUpperCase() != "DEFERRED")
+      if(order.orderStatus !=null && order.orderStatus.toUpperCase() != "CANCELLED")
       {
         if(!order.paid)
         {
@@ -268,8 +269,10 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
       console.log("add clicked", toggleValue)
       $scope.selectedOrder=new Object();
       $scope.selectedOrder.orderId=0;
+      $scope.vehicles = [];
     }
     $scope.addModeEnabled=Boolean(toggleValue);
+    
   }
 
   $scope.response = null;
@@ -337,7 +340,18 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
     order.orderStatus = $scope.selectedOrder.orderStatus;
     // order.orderDate = new Date().toISOString().substring(0, 10);
-    order.orderDate = $filter('date')(new Date(), 'yyyy-MM-dd');
+    
+    if($scope.selectedOrder.orderDate == null)
+    {
+      order.orderDate = $filter('date')(new Date(), 'yyyy-MM-dd');
+
+    }
+    else
+    {
+      console.log($scope.selectedOrder.orderDate)
+      order.orderDate = $filter('date')($scope.selectedOrder.orderDate, 'yyyy-MM-dd');
+    }
+
     order.pickupDate = $scope.selectedOrder.pickupDate.toISOString().substring(0, 10);
     order.dropoffDate = $scope.selectedOrder.dropoffDate.toISOString().substring(0, 10);;
     order.paymentMode = $scope.selectedOrder.paymentMode;
@@ -365,6 +379,22 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     }
   }
 
+  /*
+    Have to make it work
+  */
+  $scope.updateCachedOrders = function(order)
+  {
+    angular.forEach($scope.response, function(orderFromCache)
+    {
+      if(order.orderId == orderFromCache.orderId)
+      {
+        console.log("at cached orders update")
+        console.log(order)
+        orderFromCache = angular.copy(order);
+      }
+    });
+  }
+
   // http://localhost:8080/vts-core/truck/orders
   $scope.upsertOrder = function(order)
   {
@@ -386,9 +416,13 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
             $scope.response.push(response.data)
           }
           else
+          {
             $scope.selectedOrder = response.data;
+            $scope.filterByDateRange();
+            // $scope.updateCachedOrders(response.data);
+          }
           
-          console.log(response);
+          console.log(response.data);
         },
         function error(error){
           console.log(error)
@@ -421,17 +455,23 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   }
 
-  $http.get($scope.baseServiceUrl.concat("truck/orders"))
-    .then(
-        function success(response){          
-          $scope.response = response.data;
-          console.log(response)
+
+  /* 
+    Initial call
+  */
+  $scope.filterByDateRange()
+
+  // $http.get($scope.baseServiceUrl.concat("truck/orders"))
+  //   .then(
+  //       function success(response){          
+  //         $scope.response = response.data;
+  //         console.log(response)
           
-        },
-        function error(response){
-          $scope.error = response;
-        }
-    );
+  //       },
+  //       function error(response){
+  //         $scope.error = response;
+  //       }
+  //   );
 
   $scope.tripLogs = null;
   $http.get($scope.baseServiceUrl.concat("trips"))

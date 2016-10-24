@@ -119,6 +119,7 @@
                                     <label class="control-label col-sm-1"></label>
                                     
                                     </div>
+                                    <form name="filterForm">
                                     <div class="row" >
                                         <div class="col-sm-2">
                                             <select class="form-control input-sm" id="truckList" ng-model="selectedTruckFilter" ng-options="truck.display for truck in truckListFilter" ng-change="onFilterChange()">
@@ -129,10 +130,13 @@
                                             </select>
                                         </div>
                                         <div class="col-sm-2">
-                                            <input class="form-control input-sm" type="date" id="startDateFilter" ng-model="orderStartDateFilter" />
+                                            <input class="form-control input-sm" type="date" id="startDateFilter" name="startDateFilter" ng-model="orderStartDateFilter" />
                                         </div>    
                                         <div class="col-sm-2">
-                                            <input class="form-control input-sm" type="date" id="endDateFilter" ng-model="orderEndDateFilter" />
+                                            <input class="form-control input-sm" type="date" id="endDateFilter" name="endDateFilter" ng-model="orderEndDateFilter" ng-min="orderStartDateFilter" ng-required="true" />
+                                            <div ng-messages="filterForm.endDateFilter.$error">
+                                                <div class="text-danger" ng-message="min">[Order end date must be greater than or equal to start date]</div>
+                                            </div>
                                         </div>
                                         <div class="col-sm-1">
                                             <button class="btn btn-info btn-sm" type="button" ng-click="filterByDateRange()">Apply</button>
@@ -141,6 +145,7 @@
                                             <button id="addOrder" type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal" ng-click="onAddOrderClick(true)" >Add order</button>
                                         </div>
                                     </div>
+                                    </form>
 
 
                                     <!-- <div class="form-group input-group" >
@@ -180,7 +185,7 @@
                                     <th ng-repeat="x in gridHeaders">{{x}}</th>
                                 </tr>
                                 <!-- <tr ng-repeat="order in filteredOrders = (response | filter: filterFunction)"> -->
-                                <tr ng-repeat="order in filteredOrders = (response | filter:selectedTruckFilter.id | filter:selectedPaymentModeFilter)" ng-click="selectedTableRow(order)">
+                                <tr ng-repeat="order in filteredOrders = (response | filter:selectedTruckFilter.id | filter:selectedPaymentModeFilter | filter: { orderStatus : '!Cancelled'} )"  ng-click="selectedTableRow(order)" >
                                     
                                     <!-- <td>
                                         <input type="radio" name="orderDetailSelection" ng-model="$parent.orderDetailSelection" ng-change="orderSelected($event)" ng-value="order">
@@ -195,7 +200,7 @@
                                     <td>{{ order.dropoffDate | date:'MM/dd/yyyy' }}</td>
                                     <td>{{ order.dropoffContactInfo.state + ", " + order.dropoffContactInfo.zipCode  }}</td>
                                     <td>{{ order.paymentMode }}</td>
-                                    <td>{{ order.expectedMiles }}</td>
+                                    <td>{{ order.orderStatus }}</td>
                                     <td>{{ order.serviceFee }}</td>
                                 </tr>
                             </table>

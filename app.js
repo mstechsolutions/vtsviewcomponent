@@ -271,6 +271,10 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
       $scope.selectedOrder.orderId=0;
       $scope.vehicles = [];
     }
+    else
+    {
+      $('#orderTabs a:first').tab('show')
+    }
     $scope.addModeEnabled=Boolean(toggleValue);
     
   }

@@ -346,7 +346,7 @@
                 <!-- Modal content-->
                 <div class="modal-content">
                     <form class="form-horizontal" ng-submit="addOrderSubmit()" id="orderForm" name="orderForm">
-                        <ul class="nav nav-tabs">
+                        <ul class="nav nav-tabs" id="orderTabs">
                             <li class="active"><a data-toggle="tab" href="#primaryInfo">Primary</a></li>
                             <li><a data-toggle="tab" href="#addressInfo" ng-show="addModeEnabled" >Address</a></li>
                             <li><a data-toggle="tab" href="#vehicleInfo" ng-show="addModeEnabled">Vehicle</a></li>
@@ -508,22 +508,28 @@
                                         <div id="customerContact" class="panel-collapse collapse in">
                                             
                                             <div class="row contact-control">
-                                                <div class="form-group col-sm-8">
+                                                <div class="form-group col-sm-8" ng-class="orderForm.customerAddressLine1.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="customerAddressLine1">Address Line 1</label>
+                                                    <span ng-class="col-sm-1" ng-messages="orderForm.customerAddressLine1.$error">
+                                                        <span class="text-danger" ng-message="required">*</span>
+                                                    </span>
                                                     <div> 
-                                                        <input type="text" class="form-control  input-sm" id="customerAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.customerInfo.addressLine1" />
+                                                        <input type="text" class="form-control  input-sm" id="customerAddressLine1" name="customerAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.customerInfo.addressLine1" required />
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-sm-5 pull-right">
+                                                <div class="form-group col-sm-5 pull-right" ng-class="orderForm.customerAddressLine2.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="customerAddressLine2">Address Line 2</label>
+                                                    <span ng-class="col-sm-1" ng-messages="orderForm.customerAddressLine2.$error">
+                                                        <span class="text-danger" ng-message="required">*</span>
+                                                    </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" id="customerAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.customerInfo.addressLine2"/>
+                                                        <input type="text" class="form-control input-sm" id="customerAddressLine2" name="customerAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.customerInfo.addressLine2" required />
                                                     </div>
                                                 </div>
                                             </div>
 
                                             <div class="row contact-control">
-                                                <div class="form-group col-sm-4 col-sm-offset-1">
+                                                <div class="form-group col-sm-4 col-sm-offset-1" ng-class="orderForm.customerCity.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="customerCity">City</label>
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.customerCity.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
@@ -532,7 +538,7 @@
                                                         <input type="text" class="form-control input-sm" name="customerCity" id="customerCity" placeholder="Enter City" ng-model="selectedOrder.customerInfo.city" required />
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-4 col-sm-offset-1">
+                                                <div class="col-sm-4 col-sm-offset-1" ng-class="orderForm.customerState.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="customerState">State</label>
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.customerState.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
@@ -541,7 +547,7 @@
                                                         <input type="text" class="form-control input-sm" name="customerState" id="customerState" placeholder="Enter State" ng-model="selectedOrder.customerInfo.state" required />
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-sm-4 pull-right">
+                                                <div class="form-group col-sm-4 pull-right" ng-class="orderForm.customerZipCode.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="customerZipCode">Zipcode</label>
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.customerState.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
@@ -695,7 +701,7 @@
                                                 </div>
                                             </div>
                                             <div class="row contact-control">
-                                                <div class="form-group col-sm-8">
+                                                <div class="form-group col-sm-8" ng-class="orderForm.dropoffAddressLine1.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="dropoffAddressLine1">Address Line 1</label>
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffAddressLine1.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
@@ -704,7 +710,7 @@
                                                         <input type="text" class="form-control input-sm" name="dropoffAddressLine1" id="dropoffAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.dropoffContactInfo.addressLine1" required />
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-sm-5 pull-right">
+                                                <div class="form-group col-sm-5 pull-right" ng-class="orderForm.dropoffAddressLine2.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="dropoffAddressLine2">Address Line 2</label>
                                                     <div> 
                                                         <input type="text" class="form-control input-sm" id="dropoffAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.dropoffContactInfo.addressLine2" />
@@ -712,7 +718,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="row contact-control">
+                                            <div class="row contact-control" ng-class="orderForm.dropoffCity.$valid? 'has-success' : ''">
                                                 <div class="form-group col-sm-4">
                                                     <label class="control-label input-sm" for="dropoffCity">City</label>
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffCity.$error">
@@ -722,7 +728,7 @@
                                                         <input type="text" class="form-control input-sm" name="dropoffCity" id="dropoffCity" placeholder="Enter City" ng-model="selectedOrder.dropoffContactInfo.city" required  />
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-4 col-sm-offset-1">
+                                                <div class="col-sm-4 col-sm-offset-1" ng-class="orderForm.dropoffState.$valid? 'has-success' : ''">
                                                     <label class="control-label col-sm-4 input-sm" for="dropoffState">State</label>
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffState.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
@@ -731,7 +737,7 @@
                                                         <input type="text" class="form-control input-sm" name="dropoffState" id="dropoffState" placeholder="Enter State" ng-model="selectedOrder.dropoffContactInfo.state" required  />
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-sm-4 pull-right">
+                                                <div class="form-group col-sm-4 pull-right" ng-class="orderForm.dropoffZipCode.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="dropoffZipCode">Zipcode</label>
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffZipCode.$error">
                                                         <span class="text-danger" ng-message="required">*</span>

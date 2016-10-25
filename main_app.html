@@ -34,9 +34,9 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
               <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Projects</a></li>
+                <li class="active"><a href="#ordersNavTarget"  data-toggle="tab" >Home</a></li>
+                <li><a href="#ordersNavTarget" data-toggle="tab" >Orders</a></li>
+                <li><a href="#tripsNavTarget" data-toggle="tab" >Trips</a></li>
                 <li><a href="#">Contact</a></li>
               </ul>
               <ul class="nav navbar-nav navbar-right">
@@ -46,24 +46,20 @@
           </div>
         </nav>
 
-		<div class="container">
-            
-     		<div class="row content">
-                <!-- <div class="col-sm-2 sidenav">
-                  <p><a href="#">Link</a></p>
-                  <p><a href="#">Link</a></p>
-                  <p><a href="#">Link</a></p>
-                </div> -->
+        <div class="tab-content">
+        <div id="tripsNavTarget" class="tab-pane fade in" style="margin-left:75px;margin-right:75px">
 
-                <!-- <div class="col-sm-8 text-left"> -->
+            <div class="tab-content" id="tripsTabGroup">
 
-                <!--truck summary-->
-                <!-- <div style="height:10%">
-                    <table class="table table-striped ">
+                <div ng-class="tripsTabActive == tripsTabHome ? 'tab-pane active' : 'tab-pane'" role="tabpanel">
+
+                    <button id="addTrip" type="button" class="btn btn-info btn-sm" ng-click="addTrip()" style="margin-bottom:20px">Add Trip</button>
+
+                    <table class="table table-striped table-hover" ng-click="tripsTabActive=tripsTabDetail" >
                         <tr>
                             <th ng-repeat="x in tripSummaryHeaders">{{x}}</th>
                         </tr>
-                        <tr ng-repeat="trip in tripLogs" >
+                        <tr ng-repeat="trip in tripLogs" ng-click="selectedTripRow(trip)">
                             <td>{{ trip.tripId }}</td>
                             <td>{{ trip.driverId1 + "," + trip.driverId2 }}</td>
                             <td>{{ trip.startDate }}</td>
@@ -77,8 +73,133 @@
                         </tr>
                         
                     </table>
+                </div>
+                <div ng-class="tripsTabActive == tripsTabDetail ? 'tab-pane active' : 'tab-pane'" role="tabpanel" class="container" style="width:50%">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Trip Detail</div>
+                        <div class="panel-body form-inline" style="margin-left:50px">
+                            <form class="form-horizontal" ng-submit="addTrip()" id="orderForm" name="orderForm">
+                            <fieldset ng-disabled="!editTripEnabled">
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6">
+                                        <label class="control-label input-sm" for="tripId">Trip Id</label>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.tripId" id="tripId" placeholder="Enter Trip Id" ng-disabled="true">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group col-sm-6 pull-right">
+                                        
+                                        <label class="control-label input-sm" for="truckName">Truck Name</label>
+                                        <input type="text" class="form-control input-sm" ng-model="selectedTrip.truckName" name="truckName" id="tripTruckName" placeholder="Enter truck name" />
+                                        
+                                    </div>
+                                </div>
 
-                </div> -->
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6">
+                                        <label class="control-label input-sm" for="tripDriverId1">Driver 1</label>
+                                        <div>
+                                            <input type="text" class="form-control input-sm" ng-model="selectedTrip.driverId1" name="tripDriverId1" id="tripDriverId1" placeholder="Enter Driver 1" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group col-sm-6 pull-right">
+                                        <label class="control-label input-sm" for="tripDriverId2">Driver 2</label>
+                                        <div>
+                                            <input type="text" class="form-control input-sm" ng-model="selectedTrip.driverId2" name="tripDriverId2" id="tripDriverId2" placeholder="Enter Driver 2" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6">
+                                        <label class="control-label input-sm" for="tripStartDate">Start date</label>
+                                        <div>
+                                            <input type="date" class="form-control input-sm" ng-model="selectedTrip.startDate" name="tripStartDate" id="tripStartDate" placeholder="Enter Start date" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group col-sm-6 pull-right">
+                                        <label class="control-label input-sm" for="tripEndDate">End date</label>
+                                        <div>
+                                            <input type="date" class="form-control input-sm" ng-model="selectedTrip.endDate" name="tripEndDate" id="tripEndDate" placeholder="Enter End date" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6">
+                                        <label class="control-label input-sm" for="tripStartingMiles">Starting miles</label>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.startingMiles" name="tripStartingMiles" id="tripStartingMiles" placeholder="Enter Starting miles" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group col-sm-6 pull-right">
+                                        <label class="control-label input-sm" for="tripEndingMiles">Ending miles</label>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.endingMiles" name="tripEndingMiles" id="tripEndingMiles" placeholder="Enter Ending miles" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6">
+                                        <label class="control-label input-sm" for="tripGasExpense">Gas expense</label>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.gasExpense" name="tripGasExpense" id="tripGasExpense" placeholder="Enter Gas expense" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group col-sm-6 pull-right">
+                                        <label class="control-label input-sm" for="tripTollExpense">Toll expense</label>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.tollExpense" name="tripTollExpense" id="tripTollExpense" placeholder="Enter Toll expense" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6">
+                                        <label class="control-label input-sm" for="tripMaintenanceExpense">Maintenance expense</label>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.maintenanceExpense" name="tripMaintenanceExpense" id="tripMaintenanceExpense" placeholder="Enter Maintenance expense" />
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group col-sm-6 pull-right">
+                                        <label class="control-label input-sm" for="tripPayrollExpense">Payroll expense</label>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.payrollExpense" name="tripPayrollExpense" id="tripPayrollExpense" placeholder="Enter Payroll expense" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6">
+                                        <label class="control-label input-sm" for="tripMiscExpense">Misc. expense</label>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.miscExpense" name="tripMiscExpense" id="tripMiscExpense" placeholder="Enter Misc. expense" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                                <div class="row detailControlBar" style="margin-top:50px">
+                                    <button id="back2TripHome" type="button" class="btn btn-info btn-sm" ng-click="goBack2TripList()">Back</button>
+                                    <button id="editTrip" type="button" class="btn btn-info btn-sm" ng-click="editTripEnabled=true" ng-show="!isTripNew">Edit</button>
+                                    <button id="submitTrip" type="button" class="btn btn-info btn-sm">Submit</button>
+                                </div>
+
+                            
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+		<div id="ordersNavTarget" class="tab-pane fade in active" style="margin-left:75px;margin-right:75px">
+     		<div class="row content">
 
                 <!-- Orders container -->
                 <div>
@@ -337,7 +458,8 @@
                         </div>
                     </div>
                 </div><!--Order Container-->
-            </div>    
+            </div>
+        </div>        
             
             <!-- Modal -->
             <div id="myModal" class="modal fade" role="dialog">

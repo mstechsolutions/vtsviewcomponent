@@ -93,6 +93,59 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     }
   }
 
+
+  /*
+  Trips
+  */
+
+  $scope.selectedTrip = null;
+
+  $scope.tripsTabHome = "tripListTab"
+  $scope.tripsTabDetail = "tripDetailTab"
+  
+  $scope.tripsTabActive = $scope.tripsTabHome;
+  $scope.isTripNew = false;
+
+  $scope.addTrip = function()
+  {
+    $scope.tripsTabActive = $scope.tripsTabDetail;
+    $scope.resetSelectedTrip();
+    $scope.setTripEditMode(true);
+    $scope.isTripNew = true;
+  }
+
+  $scope.selectedTripRow = function(e)
+  {
+     var selectedTrip = angular.copy(e);
+     $scope.selectedTrip = selectedTrip;
+     $scope.selectedTrip.startDate = new Date(selectedTrip.startDate);
+     $scope.selectedTrip.endDate = new Date(selectedTrip.endDate);
+     $scope.resetTripNew();
+  }
+
+  $scope.goBack2TripList = function()
+  {
+    $scope.tripsTabActive = $scope.tripsTabHome;
+    $scope.resetSelectedTrip();
+    $scope.setTripEditMode(false);
+    $scope.resetTripNew();
+  }
+
+  $scope.setTripEditMode = function(toggle)
+  {
+    $scope.editTripEnabled = toggle;
+  }
+
+  $scope.resetSelectedTrip = function()
+  {
+    $scope.selectedTrip = null;
+  }
+
+  $scope.resetTripNew = function()
+  {
+    $scope.isTripNew = false;
+  }
+
   $scope.vehicles = [];
   $scope.addMoreVehicle = function(){
     var vehicle = new Object();

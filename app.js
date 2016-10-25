@@ -292,6 +292,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
     var order = new Object();
     order.orderId=$scope.selectedOrder.orderId;
+    order.referenceOrderId=$scope.selectedOrder.referenceOrderId;
     order.truckId=$scope.selectedOrder.truckName.id
     order.truckName=$scope.selectedOrder.truckName.name;
     

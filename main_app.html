@@ -353,32 +353,44 @@
                         </ul>
                         <div id="intakeTabContent" class="tab-content">
                             <div id="primaryInfo" class="tab-pane fade in active"   >
-                                <div class="form-group">
-                                    <label class="control-label col-sm-4 input-sm" for="orderId">Order Id</label>
-                                    <div class="col-sm-6">
-                                        <input type="number" class="form-control input-sm" ng-model="selectedOrder.orderId" id="orderId" placeholder="Enter Order Id" ng-disabled="true">
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6">
+                                        <label class="control-label input-sm" for="orderId">Order Id</label>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedOrder.orderId" id="orderId" placeholder="Enter Order Id" ng-disabled="true">
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-6 pull-right">
+                                        <label class="control-label input-sm" for="referenceOrderId">Reference Order Id</label>
+                                        <div>
+                                            <input type="text" class="form-control input-sm" ng-model="selectedOrder.referenceOrderId" name="referenceOrderId" id="referenceOrderId" placeholder="Enter Reference Order Id" />
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="form-group" ng-class="orderForm.truckList.$valid? 'has-success' : ''">
-                                    <label class="control-label col-sm-4  input-sm" for="truckList">Truck</label>
-                                    <div class="col-sm-6">
-                                        <select class="form-control input-sm" name="truckList" id="truckList" ng-options="truck.name for truck in truckList" ng-model="selectedOrder.truckName" required>
-                                        </select>
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6" ng-class="orderForm.truckList.$valid? 'has-success' : ''">
+                                        <label class="control-label input-sm" for="truckList">Truck</label>
+                                        <span ng-messages="orderForm.truckList.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div>
+                                            <select class="form-control input-sm" name="truckList" id="truckList" ng-options="truck.name for truck in truckList" ng-model="selectedOrder.truckName" required>
+                                            </select>
+                                        </div>
+                                        
                                     </div>
-                                    <div ng-messages="orderForm.truckList.$error">
-                                        <div class="text-danger" ng-message="required">*</div>
+                                    <div class="form-group col-sm-6 pull-right" ng-class="orderForm.orderStatus.$valid? 'has-success' : ''">
+                                        <label class="control-label input-sm" for="orderStatus">Order status</label>
+                                        <span ng-class="col-sm-1" ng-messages="orderForm.orderStatus.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div>
+                                            <select class="form-control input-sm" name="orderStatus" id="orderStatus" ng-options="orderStatus for orderStatus in orderStatusList" ng-model="selectedOrder.orderStatus" required>
+                                            </select>
+                                        </div>
+                                        
                                     </div>
-                                </div>
-                                <div class="form-group" ng-class="orderForm.orderStatus.$valid? 'has-success' : ''">
-                                    <label class="control-label col-sm-4 input-sm" for="orderStatus">Order status</label>
-                                    <div class="col-sm-6">
-                                        <select class="form-control input-sm" name="orderStatus" id="orderStatus" ng-options="orderStatus for orderStatus in orderStatusList" ng-model="selectedOrder.orderStatus" required>
-                                        </select>
-                                    </div>
-                                    <div ng-messages="orderForm.orderStatus.$error">
-                                        <div class="text-danger" ng-message="required">*</div>
-                                    </div>
-                                </div>
+                                </div>    
 
                                 <div class="row center-block">
                                     <div class="form-group col-sm-6" ng-class="orderForm.customerName.$valid? 'has-success' : ''">

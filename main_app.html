@@ -60,6 +60,7 @@
                             <th ng-repeat="x in tripSummaryHeaders">{{x}}</th>
                         </tr>
                         <tr ng-repeat="trip in tripLogs" ng-click="selectedTripRow(trip)">
+                            <td>{{ trip.tripId }}</td>
                             <td>{{ getTruckNameById(trip.truckId) }}</td>
                             <td>{{ trip.driverId1 + "," + trip.driverId2 }}</td>
                             <td>{{ trip.startDate }}</td>
@@ -104,12 +105,13 @@
                                     
                                     <div class="form-group col-sm-6 pull-right"  ng-class="tripForm.truckName.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="truckName">Truck Name</label>
+                                        
                                         <span ng-messages="tripForm.truckName.$error">
                                             <span class="text-danger" ng-message="required">*</span>
                                         </span>
                                         <div>
                                             <select class="form-control input-sm" name="truckName" id="tripTruckName" ng-options="truck.name for truck in truckList"
-                                            ng-model="selectedTrip.truck" required">
+                                            ng-model="selectedTrip.truck" required>
                                             </select>
                                         </div>
                                         
@@ -244,9 +246,14 @@
                                 </div>
                             </fieldset>
                                 <div class="row detailControlBar" style="margin-top:50px">
+                                    <div style="margin-bottom:20px">
+                                        <label ng-show="tripShowError" class="text-danger" style="font-size:15px">{{tripErrorText}}</label>
+                                    </div>
+                                    <div>
                                     <button id="back2TripHome" type="button" class="btn btn-info btn-sm" ng-click="goBack2TripList()">Back</button>
                                     <button id="editTrip" type="button" class="btn btn-info btn-sm" ng-click="editTripEnabled=true" ng-show="!isTripNew">Edit</button>
                                     <button id="submitTrip" type="button" class="btn btn-info btn-sm" ng-click="makeUpsertTrip(isTripNew)" ng-disabled="!tripForm.$valid">Submit</button>
+                                    </div>
                                 </div>
 
                             
@@ -669,7 +676,7 @@
                                     <div class="col-sm-6">
                                         <!-- <select class="form-control input-sm" name="paidStatus" id="paidStatus" ng-options="paidStatus for paidStatus in paidStatusList" ng-model="selectedOrder.isPaid" required>
                                         </select> -->
-                                        <input type=checkbox name="paidStatus" id="paidStatus" ng-model="selectedOrder.paid" required />
+                                        <input type=checkbox name="paidStatus" id="paidStatus" ng-model="selectedOrder.paid" />
                                     </div>
                                     <div ng-messages="orderForm.paidStatus.$error">
                                         <div class="text-danger" ng-message="required">*</div>
@@ -1013,9 +1020,9 @@
                         </div> <!--End of Primary tab content-->
                     
                     <div id="actionBar">
-                        <button id="nextOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Back</button>
-                        <button id="prevOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Next</button>
-                        <input type="submit" id="addOrderButton" class="btn btn-info btn-sm" ng-disabled="" />
+                        <!-- <button id="nextOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Back</button>
+                        <button id="prevOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Next</button> -->
+                        <input type="submit" id="addOrderButton" class="btn btn-info btn-sm" ng-disabled="!orderForm.$valid" />
                         <!-- ng-disabled="!orderForm.$valid" -->
                     </div>
                     </form>   

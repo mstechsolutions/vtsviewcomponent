@@ -28,7 +28,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   // ];
 
   $scope.tripSummaryHeaders = [
-    
+    "Trip ID",
     "Truck Name",
     "Drivers",
     "Start date",
@@ -131,6 +131,9 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   $scope.tripsTabActive = $scope.tripsTabHome;
   $scope.isTripNew = false;
 
+  $scope.tripShowError = false;
+  $scope.tripErrorText = "";
+
   $scope.addTrip = function()
   {
     $scope.tripsTabActive = $scope.tripsTabDetail;
@@ -205,25 +208,13 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     if(isTripNew)
     {
       trip.tripId=0;
-      var tripResponse = $scope.upsertTrip(trip, isTripNew);
-      if(tripResponse != null)
-      {
-        $scope.tripLogs.push(tripResponse);
-        $scope.goBack2TripList();
-      }
+      $scope.upsertTrip(trip, isTripNew);
     }
     else
     {
       trip.tripId=$scope.selectedTrip.tripId;
-      var tripResponse = $scope.upsertTrip(trip, isTripNew);
-      if(tripResponse != null)
-      {
-        $scope.getTrips();
-        $scope.goBack2TripList();
-      }
+      $scope.upsertTrip(trip, isTripNew);
     }
-
-    console.log(trip)
   }
 
   $scope.vehicles = [];
@@ -258,12 +249,14 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   
   $scope.orderEndDateFilter = new Date();
   $scope.orderStartDateFilter = $scope.getStartDateOfMonth(new Date());
+  $scope.orderStartDateFilter.setTime( $scope.orderStartDateFilter.getTime() - $scope.orderStartDateFilter.getTimezoneOffset()*60*1000 );
   $scope.filterByDateRange = function()
   {
     console.log($scope.orderStartDateFilter)
-    var queryParameters = new Object();
-    queryParameters.startDate=$scope.orderStartDateFilter.toISOString().substring(0, 10);
-    queryParameters.endDate=$scope.orderEndDateFilter.toISOString().substring(0, 10);
+    var queryParameters = new Object();    
+    
+    queryParameters.startDate=$filter('date')($scope.orderStartDateFilter, 'yyyy-MM-dd');
+    queryParameters.endDate=$filter('date')($scope.orderEndDateFilter, 'yyyy-MM-dd');
     $scope.getOrders(queryParameters);
     
   }
@@ -644,13 +637,21 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     })
     .then(
       function success(response){
-        console.log("add trip success",response.data);
-        return response.data;
+        console.log("add trip success", response);
+        if(isTripNew)
+        {
+          $scope.goBack2TripList();
+        }
+        
+        $scope.tripShowError = false;
+        $scope.tripErrorText = "";
+        $scope.getTrips();
       },
       function error(response){
         console.log("add trip failed",response)
-        $scope.error = response;
-        return null;
+        $scope.tripShowError = true;
+        $scope.tripErrorText = "Insert/Update trip failed";
+        
       }
     );  
   }

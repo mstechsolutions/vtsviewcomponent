@@ -60,7 +60,7 @@
                             <th ng-repeat="x in tripSummaryHeaders">{{x}}</th>
                         </tr>
                         <tr ng-repeat="trip in tripLogs" ng-click="selectedTripRow(trip)">
-                            <td>{{ trip.tripId }}</td>
+                            <td>{{ getTruckNameById(trip.truckId) }}</td>
                             <td>{{ trip.driverId1 + "," + trip.driverId2 }}</td>
                             <td>{{ trip.startDate }}</td>
                             <td>{{ trip.endDate }}</td>
@@ -74,11 +74,25 @@
                         
                     </table>
                 </div>
+
+                <!-- <div class="form-group" ng-class="orderForm.serviceFee.$valid? 'has-success' : ''">
+                                    <label class="control-label col-sm-4 input-sm" for="cost">Service fee</label>
+                                    <div class="col-sm-6"> 
+                                        <input type="number" class="form-control input-sm" name="serviceFee" id="cost" placeholder="Enter Service fee" ng-model="selectedOrder.serviceFee" required ng-min="1"/>
+                                        <div ng-messages="orderForm.serviceFee.$error">
+                                            <div class="text-danger" ng-message="min">[Must be non-zero amount]</div>
+                                        </div>
+                                    </div>
+                                    <div ng-messages="orderForm.serviceFee.$error">
+                                        <div class="text-danger" ng-message="required">*</div>
+                                    </div>
+                                </div> -->
+
                 <div ng-class="tripsTabActive == tripsTabDetail ? 'tab-pane active' : 'tab-pane'" role="tabpanel" class="container" style="width:50%">
                     <div class="panel panel-default">
                         <div class="panel-heading">Trip Detail</div>
                         <div class="panel-body form-inline" style="margin-left:50px">
-                            <form class="form-horizontal" ng-submit="addTrip()" id="orderForm" name="orderForm">
+                            <form class="form-horizontal" ng-submit="addTrip()" id="tripForm" name="tripForm">
                             <fieldset ng-disabled="!editTripEnabled">
                                 <div class="row center-block">
                                     <div class="form-group col-sm-6">
@@ -88,98 +102,143 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="form-group col-sm-6 pull-right">
-                                        
+                                    <div class="form-group col-sm-6 pull-right"  ng-class="tripForm.truckName.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="truckName">Truck Name</label>
-                                        <input type="text" class="form-control input-sm" ng-model="selectedTrip.truckName" name="truckName" id="tripTruckName" placeholder="Enter truck name" />
+                                        <span ng-messages="tripForm.truckName.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div>
+                                            <select class="form-control input-sm" name="truckName" id="tripTruckName" ng-options="truck.name for truck in truckList"
+                                            ng-model="selectedTrip.truck" required">
+                                            </select>
+                                        </div>
                                         
                                     </div>
                                 </div>
 
                                 <div class="row center-block">
-                                    <div class="form-group col-sm-6">
+                                    <div class="form-group col-sm-6" ng-class="tripForm.tripDriverId1.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripDriverId1">Driver 1</label>
+                                        <span ng-messages="tripForm.tripDriverId1.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="text" class="form-control input-sm" ng-model="selectedTrip.driverId1" name="tripDriverId1" id="tripDriverId1" placeholder="Enter Driver 1" />
+                                            <input type="text" class="form-control input-sm" ng-model="selectedTrip.driverId1" name="tripDriverId1" id="tripDriverId1" placeholder="Enter Driver 1" required />
                                         </div>
                                     </div>
                                     
-                                    <div class="form-group col-sm-6 pull-right">
+                                    <div class="form-group col-sm-6 pull-right" ng-class="tripForm.tripDriverId2.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripDriverId2">Driver 2</label>
+                                        <span ng-messages="tripForm.tripDriverId2.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="text" class="form-control input-sm" ng-model="selectedTrip.driverId2" name="tripDriverId2" id="tripDriverId2" placeholder="Enter Driver 2" />
+                                            <input type="text" class="form-control input-sm" ng-model="selectedTrip.driverId2" name="tripDriverId2" id="tripDriverId2" placeholder="Enter Driver 2" required />
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="row center-block">
-                                    <div class="form-group col-sm-6">
+                                    <div class="form-group col-sm-6" ng-class="tripForm.tripStartDate.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripStartDate">Start date</label>
+                                        <span ng-messages="tripForm.tripStartDate.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="date" class="form-control input-sm" ng-model="selectedTrip.startDate" name="tripStartDate" id="tripStartDate" placeholder="Enter Start date" />
+                                            <input type="date" class="form-control input-sm" ng-model="selectedTrip.startDate" name="tripStartDate" id="tripStartDate" placeholder="Enter Start date" required />
                                         </div>
                                     </div>
                                     
-                                    <div class="form-group col-sm-6 pull-right">
+                                    <div class="form-group col-sm-6 pull-right" ng-class="tripForm.tripEndDate.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripEndDate">End date</label>
+                                        <span ng-messages="tripForm.tripEndDate.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="date" class="form-control input-sm" ng-model="selectedTrip.endDate" name="tripEndDate" id="tripEndDate" placeholder="Enter End date" />
+                                            <input type="date" class="form-control input-sm" ng-model="selectedTrip.endDate" name="tripEndDate" id="tripEndDate" placeholder="Enter End date" required ng-min="selectedTrip.startDate" />
+                                            <div ng-messages="tripForm.tripEndDate.$error">
+                                                <div class="text-danger" ng-message="min">[End date >= Start date]</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="row center-block">
-                                    <div class="form-group col-sm-6">
+                                    <div class="form-group col-sm-6" ng-class="tripForm.tripStartingMiles.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripStartingMiles">Starting miles</label>
+                                        <span ng-messages="tripForm.tripStartingMiles.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.startingMiles" name="tripStartingMiles" id="tripStartingMiles" placeholder="Enter Starting miles" />
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.startingMiles" name="tripStartingMiles" id="tripStartingMiles" placeholder="Enter Starting miles" required />
                                         </div>
                                     </div>
                                     
-                                    <div class="form-group col-sm-6 pull-right">
+                                    <div class="form-group col-sm-6 pull-right" ng-class="tripForm.tripEndingMiles.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripEndingMiles">Ending miles</label>
+                                        <span ng-messages="tripForm.tripEndingMiles.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.endingMiles" name="tripEndingMiles" id="tripEndingMiles" placeholder="Enter Ending miles" />
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.endingMiles" name="tripEndingMiles" id="tripEndingMiles" placeholder="Enter Ending miles" ng-min="selectedTrip.startingMiles + 1" required />
+                                            <div ng-messages="tripForm.tripEndingMiles.$error">
+                                                <div class="text-danger" ng-message="min">[Ending miles > Starting miles]</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row center-block">
-                                    <div class="form-group col-sm-6">
+                                    <div class="form-group col-sm-6" ng-class="tripForm.tripGasExpense.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripGasExpense">Gas expense</label>
+                                        <span ng-messages="tripForm.tripGasExpense.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.gasExpense" name="tripGasExpense" id="tripGasExpense" placeholder="Enter Gas expense" />
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.gasExpense" name="tripGasExpense" id="tripGasExpense" placeholder="Enter Gas expense" required />
                                         </div>
                                     </div>
                                     
-                                    <div class="form-group col-sm-6 pull-right">
+                                    <div class="form-group col-sm-6 pull-right" ng-class="tripForm.tripTollExpense.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripTollExpense">Toll expense</label>
+                                        <span ng-messages="tripForm.tripTollExpense.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.tollExpense" name="tripTollExpense" id="tripTollExpense" placeholder="Enter Toll expense" />
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.tollExpense" name="tripTollExpense" id="tripTollExpense" placeholder="Enter Toll expense" required />
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="row center-block">
-                                    <div class="form-group col-sm-6">
+                                    <div class="form-group col-sm-6" ng-class="tripForm.tripMaintenanceExpense.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripMaintenanceExpense">Maintenance expense</label>
+                                        <span ng-messages="tripForm.tripMaintenanceExpense.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.maintenanceExpense" name="tripMaintenanceExpense" id="tripMaintenanceExpense" placeholder="Enter Maintenance expense" />
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.maintenanceExpense" name="tripMaintenanceExpense" id="tripMaintenanceExpense" placeholder="Enter Maintenance expense" required />
                                         </div>
                                     </div>
                                     
-                                    <div class="form-group col-sm-6 pull-right">
+                                    <div class="form-group col-sm-6 pull-right" ng-class="tripForm.tripPayrollExpense.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripPayrollExpense">Payroll expense</label>
+                                        <span ng-messages="tripForm.tripPayrollExpense.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.payrollExpense" name="tripPayrollExpense" id="tripPayrollExpense" placeholder="Enter Payroll expense" />
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.payrollExpense" name="tripPayrollExpense" id="tripPayrollExpense" placeholder="Enter Payroll expense" required />
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="row center-block">
-                                    <div class="form-group col-sm-6">
+                                    <div class="form-group col-sm-6" ng-class="tripForm.tripMiscExpense.$valid? 'has-success' : ''">
                                         <label class="control-label input-sm" for="tripMiscExpense">Misc. expense</label>
+                                        <span ng-messages="tripForm.tripMiscExpense.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
                                         <div>
-                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.miscExpense" name="tripMiscExpense" id="tripMiscExpense" placeholder="Enter Misc. expense" />
+                                            <input type="number" class="form-control input-sm" ng-model="selectedTrip.miscExpense" name="tripMiscExpense" id="tripMiscExpense" placeholder="Enter Misc. expense" required />
                                         </div>
                                     </div>
                                 </div>
@@ -187,7 +246,7 @@
                                 <div class="row detailControlBar" style="margin-top:50px">
                                     <button id="back2TripHome" type="button" class="btn btn-info btn-sm" ng-click="goBack2TripList()">Back</button>
                                     <button id="editTrip" type="button" class="btn btn-info btn-sm" ng-click="editTripEnabled=true" ng-show="!isTripNew">Edit</button>
-                                    <button id="submitTrip" type="button" class="btn btn-info btn-sm">Submit</button>
+                                    <button id="submitTrip" type="button" class="btn btn-info btn-sm" ng-click="makeUpsertTrip(isTripNew)" ng-disabled="!tripForm.$valid">Submit</button>
                                 </div>
 
                             

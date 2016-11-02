@@ -67,18 +67,43 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     {id:0, name: '', display: "All"},
     {id:1, name: 'Truck 1', display: 'Truck 1'},
     {id:2, name: 'Truck 2', display: 'Truck 2'},
-    {id:300, name: 'XMen', display: 'XMen'}
+    {id:3, name: 'Truck 3', display: 'Truck 3'}
   ];
 
   $scope.truckList = [
-    {id:1, name: 'Maximus'},
-    {id:10, name: 'Avengers'},
-    {id:300, name: 'XMen'}
+    {id:1, name: 'Truck 1'},
+    {id:2, name: 'Truck 2'},
+    {id:3, name: 'Truck 3'}
   ];
 
   $scope.paymentModeList = [
     "","COD", "Debit", "Credit", "Check"
   ];  
+
+
+  $scope.getTruckNameById = function(truckId)
+  {
+    var i=0;
+    for(i; i< $scope.truckList.length; i++)
+    {
+      if($scope.truckList[i].id == truckId)
+      {
+        return $scope.truckList[i].name;
+      }
+    }
+  }
+
+  $scope.getTruckByName = function(truckId)
+  {
+    var i=0;
+    for(i; i< $scope.truckList.length; i++)
+    {
+      if($scope.truckList[i].id == truckId)
+      {
+        return $scope.truckList[i];
+      }
+    }
+  }
 
   $scope.getTruckObjectByName = function(truckId)
   {
@@ -118,8 +143,18 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   {
      var selectedTrip = angular.copy(e);
      $scope.selectedTrip = selectedTrip;
+     $scope.selectedTrip.truck = $scope.getTruckByName(selectedTrip.truckId)
+     
+     console.log(selectedTrip.startDate, selectedTrip.endDate)
+
      $scope.selectedTrip.startDate = new Date(selectedTrip.startDate);
+     $scope.selectedTrip.startDate.setTime( $scope.selectedTrip.startDate.getTime() + $scope.selectedTrip.startDate.getTimezoneOffset()*60*1000 );
+
      $scope.selectedTrip.endDate = new Date(selectedTrip.endDate);
+     $scope.selectedTrip.endDate.setTime( $scope.selectedTrip.endDate.getTime() + $scope.selectedTrip.endDate.getTimezoneOffset()*60*1000 );
+
+     console.log($scope.selectedTrip.startDate, $scope.selectedTrip.endDate)
+     
      $scope.resetTripNew();
   }
 
@@ -144,6 +179,51 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   $scope.resetTripNew = function()
   {
     $scope.isTripNew = false;
+  }
+
+  $scope.makeUpsertTrip = function(isTripNew)
+  {
+    var trip = new Object();
+    
+    trip.truckId=$scope.selectedTrip.truck.id;
+
+    trip.driverId1=$scope.selectedTrip.driverId1;
+    trip.driverId2=$scope.selectedTrip.driverId2;
+    
+    trip.startDate=$filter('date')($scope.selectedTrip.startDate, 'yyyy-MM-dd');
+    trip.endDate=$filter('date')($scope.selectedTrip.endDate, 'yyyy-MM-dd');
+    
+    trip.startingMiles=$scope.selectedTrip.startingMiles;
+    trip.endingMiles=$scope.selectedTrip.endingMiles;
+
+    trip.gasExpense=$scope.selectedTrip.gasExpense;
+    trip.tollExpense=$scope.selectedTrip.tollExpense;
+    trip.maintenanceExpense=$scope.selectedTrip.maintenanceExpense;
+    trip.miscExpense=$scope.selectedTrip.miscExpense;
+    trip.payrollExpense=$scope.selectedTrip.payrollExpense;
+
+    if(isTripNew)
+    {
+      trip.tripId=0;
+      var tripResponse = $scope.upsertTrip(trip, isTripNew);
+      if(tripResponse != null)
+      {
+        $scope.tripLogs.push(tripResponse);
+        $scope.goBack2TripList();
+      }
+    }
+    else
+    {
+      trip.tripId=$scope.selectedTrip.tripId;
+      var tripResponse = $scope.upsertTrip(trip, isTripNew);
+      if(tripResponse != null)
+      {
+        $scope.getTrips();
+        $scope.goBack2TripList();
+      }
+    }
+
+    console.log(trip)
   }
 
   $scope.vehicles = [];
@@ -513,36 +593,74 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   }
 
+  $scope.tripLogs = null;
+  $scope.getTrips = function()
+  {
+    $http({
+      method: "GET",
+      url: $scope.baseServiceUrl.concat("trips"),
+      headers: {
+        "Content-Type" : "application/json",
+        "Accept" : "application/json"
+      }
+    })
+    .then(
+      function success(response){
+        console.log("success")
+        console.log(response.data)
+        $scope.tripLogs = response.data;
+      },
+      function error(response){
+        console.log(response)
+        $scope.error = response;
+      }
+    );  
+  }
+
+  $scope.upsertTrip = function(trip, isTripNew)
+  {
+    var httpMethod=null;
+    var resourceUrl = null;
+
+    if(isTripNew)
+    {
+      httpMethod="POST";
+      resourceUrl="trips/create";
+    }
+    else
+    {
+      httpMethod="PUT";
+      resourceUrl="trips/update";
+    }
+
+    $http({
+      method: httpMethod,
+      url: $scope.baseServiceUrl.concat(resourceUrl),
+      headers: {
+        "Content-Type" : "application/json",
+        "Accept" : "application/json"
+      },
+      data:trip
+    })
+    .then(
+      function success(response){
+        console.log("add trip success",response.data);
+        return response.data;
+      },
+      function error(response){
+        console.log("add trip failed",response)
+        $scope.error = response;
+        return null;
+      }
+    );  
+  }
 
   /* 
     Initial call
   */
-  $scope.filterByDateRange()
-
-  // $http.get($scope.baseServiceUrl.concat("truck/orders"))
-  //   .then(
-  //       function success(response){          
-  //         $scope.response = response.data;
-  //         console.log(response)
-          
-  //       },
-  //       function error(response){
-  //         $scope.error = response;
-  //       }
-  //   );
-
-  $scope.tripLogs = null;
-  $http.get($scope.baseServiceUrl.concat("trips"))
-    .then(
-        function success(response){
-          console.log("success")
-          console.log(response.data)
-          $scope.tripLogs = response.data;
-        },
-        function error(response){
-          console.log(response)
-          $scope.error = response;
-        }
-    );  
+  $scope.filterByDateRange();
+  $scope.getTrips();
 
 }]);
+
+

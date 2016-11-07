@@ -13,19 +13,8 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   $scope.selectedOrder=null;
 
-  $scope.baseServiceUrl="http://localhost:8080/vts-core/";
-  // $scope.baseServiceUrl="http://custom-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
-
-  // $scope.truckSummaryHeaders = [
-  //   "Truck Name",
-  //   "Total gas expense",
-  //   "Total Toll expense",
-  //   "Total Maintenance expense",
-  //   "Other expenses",
-  //   "Total expected Payment",
-  //   "Actual payment received",
-  //   "Total Profit"
-  // ];
+  // $scope.baseServiceUrl="http://localhost:8080/vts-core/";
+  $scope.baseServiceUrl="http://lowcost-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
 
   $scope.tripSummaryHeaders = [
     "Trip ID",
@@ -78,8 +67,30 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   $scope.paymentModeList = [
     "","COD", "Debit", "Credit", "Check"
-  ];  
+  ];
 
+  $scope.tripOptions = [
+    "New", "Existing"
+  ]
+
+  $scope.driverList = [
+    {id: 1, name: "Brad Pitt"},
+    {id: 3, name: "Leo DCarpio"},
+    {id: 2, name: "Will Smith"},
+    {id: 3, name: "Matt Damon"}
+  ];
+
+  $scope.getDriverById = function(driverId)
+  {
+    var i=0;
+    for(i; i< $scope.driverList.length; i++)
+    {
+      if($scope.driverList[i].id == driverId)
+      {
+        return $scope.driverList[i];
+      }
+    }
+  }
 
   $scope.getTruckNameById = function(truckId)
   {
@@ -118,6 +129,17 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     }
   }
 
+  $scope.validateForm = function(form)
+  {
+    console.log(form)
+    var i=0;
+    for(i; i<form.$error.required.length; i++)
+    {
+      console.log("The Form field error", form.$error.required[i].$name)
+    }
+    
+  }
+
 
   /*
   Trips
@@ -147,6 +169,9 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
      var selectedTrip = angular.copy(e);
      $scope.selectedTrip = selectedTrip;
      $scope.selectedTrip.truck = $scope.getTruckByName(selectedTrip.truckId)
+
+     $scope.selectedTrip.driver1=$scope.getDriverById($scope.selectedTrip.driverId1);
+     $scope.selectedTrip.driver2=$scope.getDriverById($scope.selectedTrip.driverId2);
      
      console.log(selectedTrip.startDate, selectedTrip.endDate)
 
@@ -190,8 +215,8 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     
     trip.truckId=$scope.selectedTrip.truck.id;
 
-    trip.driverId1=$scope.selectedTrip.driverId1;
-    trip.driverId2=$scope.selectedTrip.driverId2;
+    trip.driverId1=$scope.selectedTrip.driver1.id;
+    trip.driverId2=$scope.selectedTrip.driver2.id;
     
     trip.startDate=$filter('date')($scope.selectedTrip.startDate, 'yyyy-MM-dd');
     trip.endDate=$filter('date')($scope.selectedTrip.endDate, 'yyyy-MM-dd');
@@ -291,6 +316,10 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     if(!isNaN(customerContactNumber))
       $scope.selectedOrder.customerInfo.contactNumber=customerContactNumber;
 
+    var dropoffContactNumber=Number($scope.selectedOrder.dropoffContactInfo.contactNumber);
+    if(!isNaN(dropoffContactNumber))
+      $scope.selectedOrder.dropoffContactInfo.contactNumber=dropoffContactNumber;
+
     /* Returned order Date format is different E.g. Oct 10, 2016*/
     $scope.selectedOrder.orderDate=new Date($scope.selectedOrder.orderDate);
     $scope.selectedOrder.pickupDate=new Date($scope.selectedOrder.pickupDate);
@@ -367,24 +396,24 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     console.log($scope.orderSummary.totalAmount)
   });
   
-  /*
-    No longer used
-  */
+  // /*
+  //   No longer used
+  // */
 
-  $scope.orderDetailToggle="panel panel-primary collapse"
-  $scope.orderSelected = function(event){
+  // $scope.orderDetailToggle="panel panel-primary collapse"
+  // $scope.orderSelected = function(event){
       
-      console.log($scope.orderDetailSelection)
-      $scope.selectedOrder = angular.copy($scope.orderDetailSelection);
+  //     console.log($scope.orderDetailSelection)
+  //     $scope.selectedOrder = angular.copy($scope.orderDetailSelection);
       
-      /*Assign truck object instead of truck name*/
-      $scope.getTruckObjectByName(Number($scope.selectedOrder.truckId))
+  //     Assign truck object instead of truck name
+  //     $scope.getTruckObjectByName(Number($scope.selectedOrder.truckId))
       
-      if($scope.orderDetailToggle == "panel panel-primary collapse")
-      {
-        $scope.orderDetailToggle="panel panel-primary collapse in";
-      }
-  }
+  //     if($scope.orderDetailToggle == "panel panel-primary collapse")
+  //     {
+  //       $scope.orderDetailToggle="panel panel-primary collapse in";
+  //     }
+  // }
 
   $scope.addModeEnabled=false
   $scope.onAddOrderClick = function(toggleValue)
@@ -408,9 +437,6 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   $scope.response = null;
   $scope.addOrderSubmit = function(){
   
-    // var customerInfo = new Object();
-    // customerInfo.name = $scope.customerName;
-
     console.log("at add order testing")
     console.log($scope.selectedOrder.truckName)
     console.log($scope.selectedOrder.paymentMode)
@@ -526,7 +552,6 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     });
   }
 
-  // http://localhost:8080/vts-core/truck/orders
   $scope.upsertOrder = function(order)
   {
     $http(

@@ -125,7 +125,9 @@
                                             <span class="text-danger" ng-message="required">*</span>
                                         </span>
                                         <div>
-                                            <input type="text" class="form-control input-sm" ng-model="selectedTrip.driverId1" name="tripDriverId1" id="tripDriverId1" placeholder="Enter Driver 1" required />
+                                            <select class="form-control input-sm" name="tripDriverId1" id="tripDriverId1" ng-options="driver.name for driver in driverList"
+                                            ng-model="selectedTrip.driver1" required>
+                                            </select>
                                         </div>
                                     </div>
                                     
@@ -135,7 +137,9 @@
                                             <span class="text-danger" ng-message="required">*</span>
                                         </span>
                                         <div>
-                                            <input type="text" class="form-control input-sm" ng-model="selectedTrip.driverId2" name="tripDriverId2" id="tripDriverId2" placeholder="Enter Driver 2" required />
+                                            <select class="form-control input-sm" name="tripDriverId2" id="tripDriverId2" ng-options="driver.name for driver in driverList"
+                                            ng-model="selectedTrip.driver2" required>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -536,11 +540,49 @@
                     <form class="form-horizontal" ng-submit="addOrderSubmit()" id="orderForm" name="orderForm">
                         <ul class="nav nav-tabs" id="orderTabs">
                             <li class="active"><a data-toggle="tab" href="#primaryInfo">Primary</a></li>
-                            <li><a data-toggle="tab" href="#addressInfo" ng-show="addModeEnabled" >Address</a></li>
-                            <li><a data-toggle="tab" href="#vehicleInfo" ng-show="addModeEnabled">Vehicle</a></li>
+                            <li><a data-toggle="tab" href="#addressInfo" 
+                            
+                            >Address</a></li><!-- ng-show="addModeEnabled"  -->
+                            <li><a data-toggle="tab" href="#vehicleInfo" >Vehicle</a></li>
+                            <!-- ng-show="addModeEnabled" -->
                         </ul>
                         <div id="intakeTabContent" class="tab-content">
-                            <div id="primaryInfo" class="tab-pane fade in active"   >
+                            <div id="primaryInfo" class="tab-pane fade in active">
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-4" ng-class="orderForm.orderTripOptions.$valid? 'has-success' : ''">
+                                        <label class="control-label input-sm" for="orderTripOptions">Trip options</label>
+                                        <span ng-messages="orderForm.orderTripOptions.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div>
+                                            <select class="form-control input-sm" name="orderTripOptions" id="orderTripOptions" ng-options="tripOption for tripOption in tripOptions" ng-model="selectedOrder.tripOptions" required>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-4" ng-class="orderForm.orderExistingTripId.$valid? 'has-success' : ''" style="margin-left:30px">
+                                        <label class="control-label input-sm" for="orderExistingTripId">Existing Trip Id</label>
+                                        <span ng-messages="orderForm.orderExistingTripId.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div>
+                                            <select class="form-control input-sm" name="orderExistingTripId" id="orderExistingTripId" ng-options="order.tripId for order in response" ng-model="selectedOrder.existingTripOrder" 
+                                            ng-disabled="selectedOrder.tripOptions == undefined || selectedOrder.tripOptions == 'New' || selectedOrder.orderTripId != undefined" 
+                                            ng-required="(selectedOrder.tripOptions == 'Existing' && selectedOrder.orderTripId == undefined)">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-sm-4 pull-right" ng-class="orderForm.orderTripId.$valid? 'has-success' : ''">
+                                        <label class="control-label input-sm" for="orderTripId">Other Trip Id</label>
+                                        <span ng-messages="orderForm.orderTripId.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div>
+                                            <input type="number" class="form-control input-sm" ng-model="selectedOrder.orderTripId" id="orderTripId" name="orderTripId" placeholder="Enter Trip Id"
+                                            ng-disabled="selectedOrder.tripOptions == undefined || selectedOrder.existingTripOrder != undefined || selectedOrder.tripOptions == 'New'" 
+                                            ng-required="(selectedOrder.existingTripOrder == undefined && selectedOrder.tripOptions == 'Existing')"/>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div class="row center-block">
                                     <div class="form-group col-sm-6">
                                         <label class="control-label input-sm" for="orderId">Order Id</label>
@@ -622,64 +664,80 @@
                                     </div>
                                 </div>
 
-                                <div class="form-group" ng-class="orderForm.pickupDate.$valid? 'has-success' : ''">
-                                    <label class="control-label col-sm-4  input-sm" for="pickupDate">Pickup Date</label>
-                                    <div class="col-sm-6"> 
-                                        <input type="date" class="form-control  input-sm" name="pickupDate" ng-model="selectedOrder.pickupDate" ng-value="selectedOrder.pickupDate" required/>
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6" ng-class="orderForm.pickupDate.$valid? 'has-success' : ''">
+                                        <label class="control-label input-sm" for="pickupDate">Pickup Date</label>
+                                        <span ng-messages="orderForm.pickupDate.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div> 
+                                            <input type="date" class="form-control  input-sm" name="pickupDate" ng-model="selectedOrder.pickupDate" ng-value="selectedOrder.pickupDate" required/>
+                                        </div>
+                                        
                                     </div>
-                                    <div ng-messages="orderForm.pickupDate.$error">
-                                        <div class="text-danger" ng-message="required">*</div>
+                                    <div class="form-group col-sm-6 pull-right" ng-class="orderForm.dropoffDate.$valid? 'has-success' : ''">
+                                        <label class="control-label input-sm" for="dropoffDate">Dropoff Date</label>
+                                        <span ng-messages="orderForm.dropoffDate.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div> 
+                                            <input type="date" class="form-control  input-sm" name="dropoffDate" ng-model="selectedOrder.dropoffDate" ng-value="selectedOrder.dropoffDate" ng-min="selectedOrder.pickupDate" required ng-change="selectedOrder.dueDate=selectedOrder.dropoffDate"/>
+                                            <div ng-messages="orderForm.dropoffDate.$error">
+                                                <div class="text-danger" ng-message="min">[Dropoff date must be greater than or equal to Pickup date]</div>
+                                            </div>
+                                        </div>
+                                        
                                     </div>
                                 </div>
-                                <div class="form-group" ng-class="orderForm.dropoffDate.$valid? 'has-success' : ''">
-                                    <label class="control-label col-sm-4 input-sm" for="dropoffDate">Dropoff Date</label>
-                                    <div class="col-sm-6"> 
-                                        <input type="date" class="form-control  input-sm" name="dropoffDate" ng-model="selectedOrder.dropoffDate" ng-value="selectedOrder.dropoffDate" ng-min="selectedOrder.pickupDate" required />
-                                        <div ng-messages="orderForm.dropoffDate.$error">
-                                            <div class="text-danger" ng-message="min">[Dropoff date must be greater than or equal to Pickup date]</div>
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-6">
+                                        <label class="control-label input-sm" for="expectedMiles">Expected Miles</label>
+                                        <div> 
+                                            <input type="number" class="form-control input-sm" name="expectedMiles" id="expectedMiles" ng-model="selectedOrder.expectedMiles" placeholder="Enter Expected Miles" />
                                         </div>
                                     </div>
-                                    <div ng-messages="orderForm.dropoffDate.$error">
-                                        <div class="text-danger" ng-message="required">*</div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-sm-4 input-sm" for="expectedMiles">Expected Miles</label>
-                                    <div class="col-sm-6"> 
-                                        <input type="number" class="form-control input-sm" name="expectedMiles" id="expectedMiles" ng-model="selectedOrder.expectedMiles" placeholder="Enter Expected Miles" />
-                                    </div>
-                                </div>
-                                <div class="form-group" ng-class="orderForm.serviceFee.$valid? 'has-success' : ''">
-                                    <label class="control-label col-sm-4 input-sm" for="cost">Service fee</label>
-                                    <div class="col-sm-6"> 
-                                        <input type="number" class="form-control input-sm" name="serviceFee" id="cost" placeholder="Enter Service fee" ng-model="selectedOrder.serviceFee" required ng-min="1"/>
-                                        <div ng-messages="orderForm.serviceFee.$error">
-                                            <div class="text-danger" ng-message="min">[Must be non-zero amount]</div>
+                                    <div class="form-group col-sm-6 pull-right" ng-class="orderForm.serviceFee.$valid? 'has-success' : ''">
+                                        <label class="control-label input-sm" for="cost">Service fee</label>
+                                        <span ng-messages="orderForm.serviceFee.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div> 
+                                            <input type="number" class="form-control input-sm" name="serviceFee" id="cost" placeholder="Enter Service fee" ng-model="selectedOrder.serviceFee" required ng-min="1"/>
+                                            <div ng-messages="orderForm.serviceFee.$error">
+                                                <div class="text-danger" ng-message="min">[Must be non-zero amount]</div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div ng-messages="orderForm.serviceFee.$error">
-                                        <div class="text-danger" ng-message="required">*</div>
-                                    </div>
                                 </div>
-                                <div class="form-group" ng-class="orderForm.paymentModeList.$valid? 'has-success' : ''">
-                                    <label class="control-label col-sm-4 input-sm" for="paymentModeList">Payment Mode</label>
-                                    <div class="col-sm-6">
-                                        <select class="form-control input-sm" name="paymentModeList" id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedOrder.paymentMode" required>
-                                        </select>
+                                <div class="row center-block">
+                                    <div class="form-group col-sm-4" ng-class="orderForm.paymentModeList.$valid? 'has-success' : ''">
+                                        <label class="control-label input-sm" for="paymentModeList">Payment Mode</label>
+                                        <span ng-messages="orderForm.paymentModeList.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div>
+                                            <select class="form-control input-sm" name="paymentModeList" id="paymentModeList" ng-options="paymentMode for paymentMode in paymentModeList" ng-model="selectedOrder.paymentMode" required>
+                                            </select>
+                                        </div>    
                                     </div>
-                                    <div ng-messages="orderForm.paymentModeList.$error">
-                                        <div class="text-danger" ng-message="required">*</div>
+                                    <div class="form-group col-sm-5" style="margin-left:30px" ng-class="orderForm.dueDate.$valid? 'has-success' : ''">
+                                        <label class="control-label input-sm" for="dueDate">Due date</label>
+                                        <span ng-messages="orderForm.dueDate.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div> 
+                                            <input type="date" class="form-control input-sm" name="dueDate" id="dueDate" ng-model="selectedOrder.dueDate" placeholder="Enter Due date" required />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group" ng-class="orderForm.paidStatus.$valid? 'has-success' : ''">
-                                    <label class="control-label col-sm-4 input-sm" for="paidStatus">Paid status</label>
-                                    <div class="col-sm-6">
-                                        <!-- <select class="form-control input-sm" name="paidStatus" id="paidStatus" ng-options="paidStatus for paidStatus in paidStatusList" ng-model="selectedOrder.isPaid" required>
-                                        </select> -->
+                                    <div class="form-group col-sm-4 pull-right" style="text-align:center">
+                                        <label class="control-label input-sm" for="paidStatus">Paid status</label>
+                                        <span ng-messages="orderForm.paidStatus.$error">
+                                            <span class="text-danger" ng-message="required">*</span>
+                                        </span>
+                                        <div>
                                         <input type=checkbox name="paidStatus" id="paidStatus" ng-model="selectedOrder.paid" />
-                                    </div>
-                                    <div ng-messages="orderForm.paidStatus.$error">
-                                        <div class="text-danger" ng-message="required">*</div>
+                                        </div>
+                                        
                                     </div>
                                 </div>
                                 
@@ -1020,10 +1078,10 @@
                         </div> <!--End of Primary tab content-->
                     
                     <div id="actionBar">
+                        <input type="button" value="validate" ng-click="validateForm(orderForm)"/>
                         <!-- <button id="nextOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Back</button>
                         <button id="prevOrderButton" type="button" ng-show="addModeEnabled" class="btn btn-info btn-sm">Next</button> -->
-                        <input type="submit" id="addOrderButton" class="btn btn-info btn-sm" ng-disabled="!orderForm.$valid" />
-                        <!-- ng-disabled="!orderForm.$valid" -->
+                        <input type="submit" id="addOrderButton" class="btn btn-info btn-sm" ng-disabled="orderForm.$invalid"  />
                     </div>
                     </form>   
                 </div> <!--End of Modal content-->

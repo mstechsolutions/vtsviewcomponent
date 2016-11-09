@@ -3,6 +3,14 @@ var app = angular.module('mainApp', ['ngMessages']);
 
 app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, $filter) {
 
+  $scope.colors = [
+ {name:'black', shade:'dark'},
+ {name:'white', shade:'light'},
+ {name:'red', shade:'dark'},
+ {name:'red', shade:'dark'},
+ {name:'yellow', shade:'light'}
+];
+
   $scope.isPickupContactSameAsCC = true;
 
   $scope.ALERT_BASE="list-group-item list-group-item-action";
@@ -13,8 +21,8 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   $scope.selectedOrder=null;
 
-  // $scope.baseServiceUrl="http://localhost:8080/vts-core/";
-  $scope.baseServiceUrl="http://lowcost-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
+  $scope.baseServiceUrl="http://localhost:8080/vts-core/";
+  // $scope.baseServiceUrl="http://lowcost-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
 
   $scope.tripSummaryHeaders = [
     "Trip ID",
@@ -31,6 +39,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   ];
 
   $scope.gridHeaders = [
+    "Order ID",
     "Truck name",
     "Customer name",
     "Customer phone",
@@ -39,7 +48,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     "Pickup location",
     "Dropoff date",
     "Dropoff location",
-    "Payment mode",
+    "Payment status",
     "Order status",
     "Service fee"
   ];
@@ -138,6 +147,23 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
       console.log("The Form field error", form.$error.required[i].$name)
     }
     
+  }
+
+  $scope.existingTripOrders = [];
+  $scope.refreshExistingOrderTrips = function(orders)
+  {
+    var index=0;
+    var tempArray = [];
+    $scope.existingTripOrders = [];
+    for(var index=0; index < orders.length; index++)
+    {
+      var tripId = orders[index].tripId;
+      if(tempArray.indexOf(tripId) == -1 )
+      {
+        tempArray.push(tripId);
+        $scope.existingTripOrders.push(orders[index])
+      }
+    }
   }
 
 
@@ -322,8 +348,16 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
     /* Returned order Date format is different E.g. Oct 10, 2016*/
     $scope.selectedOrder.orderDate=new Date($scope.selectedOrder.orderDate);
+    $scope.selectedOrder.orderDate.setTime( $scope.selectedOrder.orderDate.getTime() + $scope.selectedOrder.orderDate.getTimezoneOffset()*60*1000 );
     $scope.selectedOrder.pickupDate=new Date($scope.selectedOrder.pickupDate);
+    $scope.selectedOrder.pickupDate.setTime( $scope.selectedOrder.pickupDate.getTime() + $scope.selectedOrder.pickupDate.getTimezoneOffset()*60*1000 );
     $scope.selectedOrder.dropoffDate=new Date($scope.selectedOrder.dropoffDate);
+    $scope.selectedOrder.dropoffDate.setTime( $scope.selectedOrder.dropoffDate.getTime() + $scope.selectedOrder.dropoffDate.getTimezoneOffset()*60*1000 );
+    $scope.selectedOrder.dueDate=new Date($scope.selectedOrder.dueDate);
+    $scope.selectedOrder.dueDate.setTime( $scope.selectedOrder.dueDate.getTime() + $scope.selectedOrder.dueDate.getTimezoneOffset()*60*1000 );
+
+    $scope.selectedOrder.tripOptions = "Existing";
+    $scope.selectedOrder.orderTripId = $scope.selectedOrder.tripId;
 
     //Display added vehicles
     $scope.vehicles=$scope.selectedOrder.vehicles;
@@ -379,8 +413,12 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
         }
 
+        var dueDate = new Date(order.dueDate);
+        var currentDate = new Date();
 
-        if(order.orderStatus.toUpperCase() == "COMPLETED" && !order.paid)
+        console.log("payment order due:",order.orderId, dueDate, currentDate)
+
+        if(order.orderStatus.toUpperCase() == "COMPLETED" && !Boolean(order.paid) && dueDate < currentDate )
         {
           $scope.orderSummary.totalUnpaidButOrderCompleted.value += order.serviceFee;
           if($scope.orderSummary.totalUnpaidButOrderCompleted.value > 0)
@@ -447,6 +485,14 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     order.referenceOrderId=$scope.selectedOrder.referenceOrderId;
     order.truckId=$scope.selectedOrder.truckName.id
     order.truckName=$scope.selectedOrder.truckName.name;
+
+    if($scope.selectedOrder.tripOptions == "New")
+      order.tripId=0;
+    else if($scope.selectedOrder.existingTripOrder != undefined)
+      order.tripId=$scope.selectedOrder.existingTripOrder.tripId;
+    else
+      order.tripId=$scope.selectedOrder.orderTripId;
+    
     
     //Need to lookout
     order.vehicles=$scope.vehicles;
@@ -493,6 +539,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     dropoffContactInfo.state = $scope.selectedOrder.dropoffContactInfo.state;
     dropoffContactInfo.zipCode = $scope.selectedOrder.dropoffContactInfo.zipCode;
     dropoffContactInfo.city = $scope.selectedOrder.dropoffContactInfo.city;
+    dropoffContactInfo.emailAddress = $scope.selectedOrder.dropoffContactInfo.emailAddress;
     order.dropoffContactInfo = dropoffContactInfo;
 
     order.orderStatus = $scope.selectedOrder.orderStatus;
@@ -509,6 +556,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
       order.orderDate = $filter('date')($scope.selectedOrder.orderDate, 'yyyy-MM-dd');
     }
 
+    order.dueDate = $filter('date')($scope.selectedOrder.dueDate, 'yyyy-MM-dd');
     order.pickupDate = $scope.selectedOrder.pickupDate.toISOString().substring(0, 10);
     order.dropoffDate = $scope.selectedOrder.dropoffDate.toISOString().substring(0, 10);;
     order.paymentMode = $scope.selectedOrder.paymentMode;
@@ -602,7 +650,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
         function success(response){          
           $scope.response = response.data;
           console.log(response)
-          
+          $scope.refreshExistingOrderTrips(response.data)
         },
         function error(response){
           $scope.error = response;

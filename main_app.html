@@ -270,7 +270,6 @@
         </div>
 		<div id="ordersNavTarget" class="tab-pane fade in active" style="margin-left:75px;margin-right:75px">
      		<div class="row content">
-
                 <!-- Orders container -->
                 <div>
 
@@ -382,6 +381,7 @@
                                         <input type="radio" name="orderDetailSelection" ng-model="$parent.orderDetailSelection" ng-change="orderSelected($event)" ng-value="order">
                                         </input>
                                     </td> -->
+                                    <td>{{ order.orderId }}</td>
                                     <td>{{ order.truckName }}</td>
                                     <td>{{ order.customerInfo.firstName }}</td>
                                     <td>{{ order.customerInfo.contactNumber }}</td>
@@ -390,7 +390,7 @@
                                     <td>{{ order.pickupContactInfo.state + ", " + order.pickupContactInfo.zipCode}}</td>
                                     <td>{{ order.dropoffDate | date:'MM/dd/yyyy' }}</td>
                                     <td>{{ order.dropoffContactInfo.state + ", " + order.dropoffContactInfo.zipCode  }}</td>
-                                    <td>{{ order.paymentMode }}</td>
+                                    <td>{{ order.paid ? "Paid" : "Not paid" }}</td>
                                     <td>{{ order.orderStatus }}</td>
                                     <td>{{ order.serviceFee }}</td>
                                 </tr>
@@ -540,11 +540,8 @@
                     <form class="form-horizontal" ng-submit="addOrderSubmit()" id="orderForm" name="orderForm">
                         <ul class="nav nav-tabs" id="orderTabs">
                             <li class="active"><a data-toggle="tab" href="#primaryInfo">Primary</a></li>
-                            <li><a data-toggle="tab" href="#addressInfo" 
-                            
-                            >Address</a></li><!-- ng-show="addModeEnabled"  -->
-                            <li><a data-toggle="tab" href="#vehicleInfo" >Vehicle</a></li>
-                            <!-- ng-show="addModeEnabled" -->
+                            <li><a data-toggle="tab" href="#addressInfo" ng-show="addModeEnabled">Address</a></li>
+                            <li><a data-toggle="tab" href="#vehicleInfo" ng-show="addModeEnabled">Vehicle</a></li>
                         </ul>
                         <div id="intakeTabContent" class="tab-content">
                             <div id="primaryInfo" class="tab-pane fade in active">
@@ -565,7 +562,7 @@
                                             <span class="text-danger" ng-message="required">*</span>
                                         </span>
                                         <div>
-                                            <select class="form-control input-sm" name="orderExistingTripId" id="orderExistingTripId" ng-options="order.tripId for order in response" ng-model="selectedOrder.existingTripOrder" 
+                                            <select class="form-control input-sm" name="orderExistingTripId" id="orderExistingTripId" ng-options="order.tripId for order in existingTripOrders" ng-model="selectedOrder.existingTripOrder" 
                                             ng-disabled="selectedOrder.tripOptions == undefined || selectedOrder.tripOptions == 'New' || selectedOrder.orderTripId != undefined" 
                                             ng-required="(selectedOrder.tripOptions == 'Existing' && selectedOrder.orderTripId == undefined)">
                                             </select>
@@ -772,16 +769,16 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="text" class="form-control  input-sm" id="customerAddressLine1" name="customerAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.customerInfo.addressLine1" required />
+                                                        <input type="text" class="form-control  input-sm" id="customerAddressLine1" name="customerAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.customerInfo.addressLine1" ng-required="addModeEnabled" />
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-sm-5 pull-right" ng-class="orderForm.customerAddressLine2.$valid? 'has-success' : ''">
+                                                <div class="form-group col-sm-5 pull-right" >
                                                     <label class="control-label input-sm" for="customerAddressLine2">Address Line 2</label>
-                                                    <span ng-class="col-sm-1" ng-messages="orderForm.customerAddressLine2.$error">
+                                                    <!-- <span ng-class="col-sm-1" ng-messages="orderForm.customerAddressLine2.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
-                                                    </span>
+                                                    </span> -->
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" id="customerAddressLine2" name="customerAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.customerInfo.addressLine2" required />
+                                                        <input type="text" class="form-control input-sm" id="customerAddressLine2" name="customerAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.customerInfo.addressLine2" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -793,7 +790,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" name="customerCity" id="customerCity" placeholder="Enter City" ng-model="selectedOrder.customerInfo.city" required />
+                                                        <input type="text" class="form-control input-sm" name="customerCity" id="customerCity" placeholder="Enter City" ng-model="selectedOrder.customerInfo.city" ng-required="addModeEnabled" />
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-4 col-sm-offset-1" ng-class="orderForm.customerState.$valid? 'has-success' : ''">
@@ -802,7 +799,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" name="customerState" id="customerState" placeholder="Enter State" ng-model="selectedOrder.customerInfo.state" required />
+                                                        <input type="text" class="form-control input-sm" name="customerState" id="customerState" placeholder="Enter State" ng-model="selectedOrder.customerInfo.state" ng-required="addModeEnabled" />
                                                     </div>
                                                 </div>
                                                 <div class="form-group col-sm-4 pull-right" ng-class="orderForm.customerZipCode.$valid? 'has-success' : ''">
@@ -811,13 +808,13 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input name="customerZipCode" type="number" class="form-control input-sm" id="customerZipCode" placeholder="Enter Zipcode" ng-model="selectedOrder.customerInfo.zipCode" required />
+                                                        <input name="customerZipCode" type="number" class="form-control input-sm" id="customerZipCode" placeholder="Enter Zipcode" ng-model="selectedOrder.customerInfo.zipCode" ng-required="addModeEnabled" />
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default">
+                                    <div class="panel panel-default" ng-show='false'>
                                         <div class="panel-heading">
                                             <!-- <h4 class="panel-title">
                                                 <a data-toggle="collapse" data-parent="#accordion" href="#pickupCustomerContact">Pickup contact</a>
@@ -854,7 +851,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div>
-                                                        <input type="number" class="form-control input-sm" name="pickupContact" ng-model="selectedOrder.pickupContactInfo.contactNumber" placeholder="Enter contact number" ng-required="!isPickupContactSameAsCC" ng-minlength="10" ng-maxlength="10" />
+                                                        <input type="number" class="form-control input-sm" name="pickupContact" ng-model="selectedOrder.pickupContactInfo.contactNumber" placeholder="Enter contact number" ng-required="!isPickupContactSameAsCC" ng-minlength="!isPickupContactSameAsCC ? 10 : 0" ng-maxlength="10" />
                                                         <span ng-messages="orderForm.pickupContact.$error">
                                                             <span class="text-danger" ng-message="minlength">[Expected 10 digits exactly]</span>
                                                         </span>
@@ -923,7 +920,7 @@
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffFirstName.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
-                                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.dropoffContactInfo.firstName" name="dropoffFirstName" placeholder="Enter first name" required />           
+                                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.dropoffContactInfo.firstName" name="dropoffFirstName" placeholder="Enter first name" ng-required="addModeEnabled" />           
                                                 </div>
 
                                                 <div class="form-group col-sm-6 pull-right" ng-class="orderForm.dropoffLastName.$valid? 'has-success' : ''">
@@ -931,7 +928,7 @@
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffLastName.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
-                                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.dropoffContactInfo.lastName" name="dropoffLastName" placeholder="Enter last name" required />
+                                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.dropoffContactInfo.lastName" name="dropoffLastName" placeholder="Enter last name" ng-required="addModeEnabled" />
                                                 </div>
                                             </div>
 
@@ -942,7 +939,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div>
-                                                        <input type="number" class="form-control input-sm" name="dropoffContact" ng-model="selectedOrder.dropoffContactInfo.contactNumber" placeholder="Enter contact number" required ng-minlength="10" ng-maxlength="10" />
+                                                        <input type="number" class="form-control input-sm" name="dropoffContact" ng-model="selectedOrder.dropoffContactInfo.contactNumber" placeholder="Enter contact number" ng-required="addModeEnabled" ng-minlength="addModeEnabled ? 10 : 0" ng-maxlength="10" />
                                                         <span ng-messages="orderForm.dropoffContact.$error">
                                                             <span class="text-danger" ng-message="minlength">[Expected 10 digits exactly]</span>
                                                         </span>
@@ -955,7 +952,7 @@
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffEmail.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
-                                                    <input type="email" class="form-control input-sm" name="dropoffEmail" ng-model="selectedOrder.dropoffContactInfo.emailAddress" placeholder="Enter email address" required />
+                                                    <input type="email" class="form-control input-sm" name="dropoffEmail" ng-model="selectedOrder.dropoffContactInfo.emailAddress" placeholder="Enter email address" ng-required="addModeEnabled" />
                                                 </div>
                                             </div>
                                             <div class="row contact-control">
@@ -965,10 +962,10 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" name="dropoffAddressLine1" id="dropoffAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.dropoffContactInfo.addressLine1" required />
+                                                        <input type="text" class="form-control input-sm" name="dropoffAddressLine1" id="dropoffAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.dropoffContactInfo.addressLine1" ng-required="addModeEnabled" />
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-sm-5 pull-right" ng-class="orderForm.dropoffAddressLine2.$valid? 'has-success' : ''">
+                                                <div class="form-group col-sm-5 pull-right">
                                                     <label class="control-label input-sm" for="dropoffAddressLine2">Address Line 2</label>
                                                     <div> 
                                                         <input type="text" class="form-control input-sm" id="dropoffAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.dropoffContactInfo.addressLine2" />
@@ -983,7 +980,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" name="dropoffCity" id="dropoffCity" placeholder="Enter City" ng-model="selectedOrder.dropoffContactInfo.city" required  />
+                                                        <input type="text" class="form-control input-sm" name="dropoffCity" id="dropoffCity" placeholder="Enter City" ng-model="selectedOrder.dropoffContactInfo.city" ng-required="addModeEnabled"  />
                                                     </div>
                                                 </div>
                                                 <div class="col-sm-4 col-sm-offset-1" ng-class="orderForm.dropoffState.$valid? 'has-success' : ''">
@@ -992,7 +989,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" name="dropoffState" id="dropoffState" placeholder="Enter State" ng-model="selectedOrder.dropoffContactInfo.state" required  />
+                                                        <input type="text" class="form-control input-sm" name="dropoffState" id="dropoffState" placeholder="Enter State" ng-model="selectedOrder.dropoffContactInfo.state" ng-required="addModeEnabled"  />
                                                     </div>
                                                 </div>
                                                 <div class="form-group col-sm-4 pull-right" ng-class="orderForm.dropoffZipCode.$valid? 'has-success' : ''">
@@ -1001,7 +998,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div> 
-                                                        <input type="number" class="form-control input-sm" name="dropoffZipCode" id="dropoffZipCode" placeholder="Enter Zipcode" ng-model="selectedOrder.dropoffContactInfo.zipCode" required />
+                                                        <input type="number" class="form-control input-sm" name="dropoffZipCode" id="dropoffZipCode" placeholder="Enter Zipcode" ng-model="selectedOrder.dropoffContactInfo.zipCode" ng-required="addModeEnabled" />
                                                     </div>
                                                 </div>
                                             </div>

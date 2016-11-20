@@ -814,11 +814,11 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default">
+                                    <div class="panel panel-default" ng-show='false'>
                                         <div class="panel-heading">
-                                            <h4 class="panel-title">
+                                            <!-- <h4 class="panel-title">
                                                 <a data-toggle="collapse" data-parent="#accordion" href="#pickupCustomerContact">Pickup contact</a>
-                                            </h4>
+                                            </h4> -->
                                             <div class="panel-title">
                                                 <input type="checkbox" ng-checked="isPickupContactSameAsCC" ng-click="onCheckedPickupContact()" ng-model="isPickupContactSameAsCC">
                                                 <label class="input-sm" href="#pickupCustomerContact">Pickup contact same as Customer contact</label>
@@ -909,23 +909,18 @@
                                     </div>
                                     <div class="panel panel-default">
                                         <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#dropoffCustomerContact">Dropoff contact</a>
-                                            </h4>
                                             <div class="panel-title">
-                                                <input type="checkbox" ng-checked="isdropoffCustomerContactSameAsCC" ng-click="onCheckedDropoffContact()" ng-model="isdropoffCustomerContactSameAsCC">
-                                                <label class="input-sm" href="#dropoffCustomerContact">Dropoff contact same as Customer contact</label>
+                                                <label class="input-sm">Dropoff Contact</label>
                                             </div>
                                         </div>
-                                        <div id="dropoffCustomerContact"
-                                        ng-class="dropoffClassToggle">
+                                        <div id="dropoffCustomerContact" class="panel-collapse collapse in">
                                             <div class="row contact-control">
                                                 <div class="form-group col-sm-6" ng-class="orderForm.dropoffFirstName.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="dropoffFirstName">First Name</label>
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffFirstName.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
-                                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.dropoffContactInfo.firstName" name="dropoffFirstName" placeholder="Enter first name" ng-required="!isdropoffCustomerContactSameAsCC" />           
+                                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.dropoffContactInfo.firstName" name="dropoffFirstName" placeholder="Enter first name" ng-required="addModeEnabled" />           
                                                 </div>
 
                                                 <div class="form-group col-sm-6 pull-right" ng-class="orderForm.dropoffLastName.$valid? 'has-success' : ''">
@@ -933,7 +928,7 @@
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffLastName.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
-                                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.dropoffContactInfo.lastName" name="dropoffLastName" placeholder="Enter last name" ng-required="!isdropoffCustomerContactSameAsCC" />
+                                                    <input type="text" class="form-control input-sm" ng-model="selectedOrder.dropoffContactInfo.lastName" name="dropoffLastName" placeholder="Enter last name" ng-required="addModeEnabled" />
                                                 </div>
                                             </div>
 
@@ -944,7 +939,7 @@
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
                                                     <div>
-                                                        <input type="number" class="form-control input-sm" name="dropoffContact" ng-model="selectedOrder.dropoffContactInfo.contactNumber" placeholder="Enter contact number" ng-required="!isdropoffCustomerContactSameAsCC" ng-minlength="!isdropoffCustomerContactSameAsCC ? 10 : 0" ng-maxlength="10" />
+                                                        <input type="number" class="form-control input-sm" name="dropoffContact" ng-model="selectedOrder.dropoffContactInfo.contactNumber" placeholder="Enter contact number" ng-required="addModeEnabled" ng-minlength="addModeEnabled ? 10 : 0" ng-maxlength="10" />
                                                         <span ng-messages="orderForm.dropoffContact.$error">
                                                             <span class="text-danger" ng-message="minlength">[Expected 10 digits exactly]</span>
                                                         </span>
@@ -957,47 +952,58 @@
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffEmail.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
-                                                    <input type="email" class="form-control input-sm" name="dropoffEmail" ng-model="selectedOrder.dropoffContactInfo.emailAddress" placeholder="Enter email address" ng-required="!isdropoffCustomerContactSameAsCC" />
+                                                    <input type="email" class="form-control input-sm" name="dropoffEmail" ng-model="selectedOrder.dropoffContactInfo.emailAddress" placeholder="Enter email address" ng-required="addModeEnabled" />
                                                 </div>
-                                            </div>                                        
+                                            </div>
                                             <div class="row contact-control">
-                                                <div class="form-group col-sm-8">
+                                                <div class="form-group col-sm-8" ng-class="orderForm.dropoffAddressLine1.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="dropoffAddressLine1">Address Line 1</label>
+                                                    <span ng-class="col-sm-1" ng-messages="orderForm.dropoffAddressLine1.$error">
+                                                        <span class="text-danger" ng-message="required">*</span>
+                                                    </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" id="dropoffAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.dropoffContactInfo.addressLine1" ng-required="!isdropoffCustomerContactSameAsCC">
+                                                        <input type="text" class="form-control input-sm" name="dropoffAddressLine1" id="dropoffAddressLine1" placeholder="Enter Address Line 1" ng-model="selectedOrder.dropoffContactInfo.addressLine1" ng-required="addModeEnabled" />
                                                     </div>
                                                 </div>
                                                 <div class="form-group col-sm-5 pull-right">
                                                     <label class="control-label input-sm" for="dropoffAddressLine2">Address Line 2</label>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" id="dropoffAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.dropoffContactInfo.addressLine2" ng-required="!isdropoffCustomerContactSameAsCC">
+                                                        <input type="text" class="form-control input-sm" id="dropoffAddressLine2" placeholder="Enter Address Line 2" ng-model="selectedOrder.dropoffContactInfo.addressLine2" />
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="row contact-control">
+
+                                            <div class="row contact-control" ng-class="orderForm.dropoffCity.$valid? 'has-success' : ''">
                                                 <div class="form-group col-sm-4">
                                                     <label class="control-label input-sm" for="dropoffCity">City</label>
+                                                    <span ng-class="col-sm-1" ng-messages="orderForm.dropoffCity.$error">
+                                                        <span class="text-danger" ng-message="required">*</span>
+                                                    </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" id="dropoffCity" placeholder="Enter City" ng-model="selectedOrder.dropoffContactInfo.city" ng-required="!isdropoffCustomerContactSameAsCC" />
+                                                        <input type="text" class="form-control input-sm" name="dropoffCity" id="dropoffCity" placeholder="Enter City" ng-model="selectedOrder.dropoffContactInfo.city" ng-required="addModeEnabled"  />
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-4 col-sm-offset-1">
-                                                    <label class="control-label input-sm" for="dropoffState">State</label>
+                                                <div class="col-sm-4 col-sm-offset-1" ng-class="orderForm.dropoffState.$valid? 'has-success' : ''">
+                                                    <label class="control-label col-sm-4 input-sm" for="dropoffState">State</label>
+                                                    <span ng-class="col-sm-1" ng-messages="orderForm.dropoffState.$error">
+                                                        <span class="text-danger" ng-message="required">*</span>
+                                                    </span>
                                                     <div> 
-                                                        <input type="text" class="form-control input-sm" id="dropoffState" placeholder="Enter State" ng-model="selectedOrder.dropoffContactInfo.state" ng-required="!isdropoffCustomerContactSameAsCC"/>
+                                                        <input type="text" class="form-control input-sm" name="dropoffState" id="dropoffState" placeholder="Enter State" ng-model="selectedOrder.dropoffContactInfo.state" ng-required="addModeEnabled"  />
                                                     </div>
                                                 </div>
-                                                <div class="form-group col-sm-4 pull-right">
+                                                <div class="form-group col-sm-4 pull-right" ng-class="orderForm.dropoffZipCode.$valid? 'has-success' : ''">
                                                     <label class="control-label input-sm" for="dropoffZipCode">Zipcode</label>
+                                                    <span ng-class="col-sm-1" ng-messages="orderForm.dropoffZipCode.$error">
+                                                        <span class="text-danger" ng-message="required">*</span>
+                                                    </span>
                                                     <div> 
-                                                        <input type="number" class="form-control input-sm" name="dropoffZipCode" id="dropoffZipCode" placeholder="Enter Zipcode" ng-model="selectedOrder.dropoffContactInfo.zipCode" ng-required="!isdropoffCustomerContactSameAsCC" />
-                                                        <span ng-messages="orderForm.dropoffZipCode.$error">
-                                                            <span class="text-danger" ng-message="minlength">[  Expected 10 digits exactly]</span>
-                                                        </span>
+                                                        <input type="number" class="form-control input-sm" name="dropoffZipCode" id="dropoffZipCode" placeholder="Enter Zipcode" ng-model="selectedOrder.dropoffContactInfo.zipCode" ng-required="addModeEnabled" />
                                                     </div>
                                                 </div>
                                             </div>
-                                            
+
+
                                         </div>
                                     </div>
                                 </div>

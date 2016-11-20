@@ -12,7 +12,6 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 ];
 
   $scope.isPickupContactSameAsCC = true;
-  $scope.isdropoffCustomerContactSameAsCC = true;
 
   $scope.ALERT_BASE="list-group-item list-group-item-action";
   $scope.ALERT_SUCCESS="list-group-item-success";
@@ -499,7 +498,6 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     order.vehicles=$scope.vehicles;
     
     var pickupContactInfo = null;
-    var dropoffContactInfo = null;
     var customerInfo = new Object();
     customerInfo.firstName = $scope.selectedOrder.customerInfo.firstName;
     customerInfo.lastName = $scope.selectedOrder.customerInfo.lastName;
@@ -510,7 +508,6 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     customerInfo.state = $scope.selectedOrder.customerInfo.state;
     customerInfo.zipCode = $scope.selectedOrder.customerInfo.zipCode;
     customerInfo.city = $scope.selectedOrder.customerInfo.city;
-    customerInfo.country = $scope.selectedOrder.customerInfo.country;
     order.customerInfo = customerInfo;
 
 
@@ -529,19 +526,11 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
       pickupContactInfo.state = $scope.selectedOrder.pickupContactInfo.state;
       pickupContactInfo.zipCode = $scope.selectedOrder.pickupContactInfo.zipCode;
       pickupContactInfo.city = $scope.selectedOrder.pickupContactInfo.city;
-      pickupContactInfo.country = $scope.selectedOrder.pickupContactInfo.country;
-      pickupContactInfo.emailAddress = $scope.selectedOrder.pickupContactInfo.emailAddress;
       
     }  
     order.pickupContactInfo = pickupContactInfo;
   
-    if($scope.isdropoffCustomerContactSameAsCC)
-    {
-    	dropoffContactInfo=customerInfo;
-    }
-    else
-    {
-    dropoffContactInfo = new Object();
+    var dropoffContactInfo = new Object();
     dropoffContactInfo.firstName = $scope.selectedOrder.dropoffContactInfo.firstName;
     dropoffContactInfo.lastName = $scope.selectedOrder.dropoffContactInfo.lastName;
     dropoffContactInfo.contactNumber = $scope.selectedOrder.dropoffContactInfo.contactNumber;
@@ -551,8 +540,6 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     dropoffContactInfo.zipCode = $scope.selectedOrder.dropoffContactInfo.zipCode;
     dropoffContactInfo.city = $scope.selectedOrder.dropoffContactInfo.city;
     dropoffContactInfo.emailAddress = $scope.selectedOrder.dropoffContactInfo.emailAddress;
-    dropoffContactInfo.country = $scope.selectedOrder.dropoffContactInfo.country;
-    }
     order.dropoffContactInfo = dropoffContactInfo;
 
     order.orderStatus = $scope.selectedOrder.orderStatus;
@@ -594,20 +581,6 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     else
     {
       $scope.pickupClassToggle="panel-collapse collapse";
-    }
-  }
-
-  
-  $scope.dropoffClassToggle="panel-collapse collapse";
-  $scope.onCheckedDropoffContact = function()
-  {
-    if(!$scope.isdropoffCustomerContactSameAsCC)
-    {
-      $scope.dropoffClassToggle="panel-collapse collapse in";
-    }
-    else
-    {
-      $scope.dropoffClassToggle="panel-collapse collapse";
     }
   }
 
@@ -763,5 +736,4 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   $scope.getTrips();
 
 }]);
-
 

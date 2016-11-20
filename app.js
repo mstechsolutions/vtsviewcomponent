@@ -309,6 +309,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     queryParameters.startDate=$filter('date')($scope.orderStartDateFilter, 'yyyy-MM-dd');
     queryParameters.endDate=$filter('date')($scope.orderEndDateFilter, 'yyyy-MM-dd');
     $scope.getOrders(queryParameters);
+    $scope.getTrips(queryParameters);
     
   }
 
@@ -660,7 +661,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   }
 
   $scope.tripLogs = null;
-  $scope.getTrips = function()
+  $scope.getTrips = function(queryParameters)
   {
     $http({
       method: "GET",
@@ -668,12 +669,13 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
       headers: {
         "Content-Type" : "application/json",
         "Accept" : "application/json"
-      }
+      },
+      params:queryParameters
     })
     .then(
       function success(response){
         console.log("success")
-        console.log(response.data)
+        console.log("trips data", response.data)
         $scope.tripLogs = response.data;
       },
       function error(response){
@@ -733,7 +735,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     Initial call
   */
   $scope.filterByDateRange();
-  $scope.getTrips();
+  // $scope.getTrips();
 
 }]);
 

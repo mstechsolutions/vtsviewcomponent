@@ -1,5 +1,19 @@
 
-var app = angular.module('mainApp', ['ngMessages']);
+var app = angular.module('mainApp', ['ngMessages'])
+  .filter('sumByKey', function () {
+    return function (data, key) {
+        if (typeof (data) === 'undefined' || typeof (key) === 'undefined') {
+            return 0;
+        }
+
+        var sum = 0;
+        for (var i = data.length - 1; i >= 0; i--) {
+            sum += parseInt(data[i][key]);
+        }
+
+        return sum;
+    };
+})
 
 app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, $filter) {
 
@@ -23,6 +37,13 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   $scope.baseServiceUrl="http://localhost:8080/vts-core/";
   // $scope.baseServiceUrl="http://lowcost-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
+
+  $scope.truckSummaryHeaders = [
+    "Truck Name",
+    "Total Order",
+    "Total Expense",
+    "Net Profit"
+  ];
 
   $scope.tripSummaryHeaders = [
     "Trip ID",
@@ -310,6 +331,51 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     queryParameters.endDate=$filter('date')($scope.orderEndDateFilter, 'yyyy-MM-dd');
     $scope.getOrders(queryParameters);
     $scope.getTrips(queryParameters);
+  }
+
+  $scope.$watchCollection("response", function() {
+    $scope.calculateTruckSummary();
+  });
+
+  $scope.$watchCollection("tripLogs", function() {
+    $scope.calculateTruckSummary();
+  });
+
+  $scope.truckStatList = [];
+  $scope.calculateTruckSummary = function()
+  {
+    $scope.truckStatList = [];
+    var orderList = angular.copy($scope.response);
+    var tripList = angular.copy($scope.tripLogs);
+    
+    angular.forEach($scope.truckList, function(truck)
+    {
+      
+      var tempTruckOrderAmountTotal = 0;
+      var tempOrders = $filter('filter')(orderList, {truckId : truck.id});
+      angular.forEach(tempOrders, function(tempOrder)
+      {
+        if(tempOrder.orderStatus != 'Cancelled')
+          tempTruckOrderAmountTotal  = tempTruckOrderAmountTotal + tempOrder.serviceFee;
+      });
+
+      var tempTruckExpenseTotal = 0;
+      var tempTrips = $filter('filter')(tripList, {truckId : truck.id});
+      angular.forEach(tempTrips, function(tempTrip)
+      {
+        tempTruckExpenseTotal  = tempTruckExpenseTotal + tempTrip.gasExpense + tempTrip.tollExpense + tempTrip.maintenanceExpense + tempTrip.miscExpense + + tempTrip.payrollExpense;
+      });
+
+      var truckStat = new Object();
+      truckStat.truckId = truck.id;
+      truckStat.truckName = truck.name;
+      truckStat.totalOrderAmount = tempTruckOrderAmountTotal;
+      truckStat.totalTruckExpense = tempTruckExpenseTotal;
+      truckStat.netProfit = tempTruckOrderAmountTotal - tempTruckExpenseTotal;
+      $scope.truckStatList.push(truckStat);
+      
+    });
+
     
   }
 

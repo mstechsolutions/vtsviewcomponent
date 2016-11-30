@@ -119,6 +119,18 @@
 
                 <div ng-class="tripsTabActive == tripsTabHome ? 'tab-pane active' : 'tab-pane'" role="tabpanel">
 
+                    <table class="table table-striped table-hover" ng-click="tripsTabActive=tripsTabDetail" >
+                        <tr>
+                            <th ng-repeat="x in truckSummaryHeaders">{{x}}</th>
+                        </tr>
+                        <tr ng-repeat="truckStat in truckStatList">
+                            <td>{{truckStat.truckName}}</td>
+                            <td>{{truckStat.totalOrderAmount}}</td>
+                            <td>{{truckStat.totalTruckExpense}}</td>
+                            <td>{{truckStat.netProfit}}</td>
+                        </tr>
+                    </table>
+
                     <button id="addTrip" type="button" class="btn btn-info btn-sm" ng-click="addTrip()" style="margin-bottom:20px">Add Trip</button>
 
                     <table class="table table-striped table-hover" ng-click="tripsTabActive=tripsTabDetail" >
@@ -138,7 +150,6 @@
                             <td>{{ trip.maintenanceExpense }}</td>
                             <td>{{ trip.miscExpense }}</td>
                         </tr>
-                        
                     </table>
                 </div>
 

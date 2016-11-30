@@ -67,6 +67,16 @@
                         <span class="badge" style="margin-left:10px">{{"$ "+orderSummary.totalUnpaidButOrderCompleted.value}}</span>
                     </a>
 
+                    <a href="#" class="{{orderSummary.totalExpense.alert}}">
+                        Total Expense
+                        <span class="badge" style="margin-left:10px">{{"$ "+orderSummary.totalExpense.value}}</span>
+                    </a>
+
+                    <a href="#" class="{{(orderSummary.totalOrderAmount.value - orderSummary.totalExpense.value) > 0 ? makeAlertStyle(ALERT_SUCCESS) : makeAlertStyle(ALERT_DANGER)}}">
+                        Net Profit
+                        <span class="badge" style="margin-left:10px">{{"$ "+ (orderSummary.totalOrderAmount.value - orderSummary.totalExpense.value)}}</span>
+                    </a>
+
                 </div>
             </div>
         </div>

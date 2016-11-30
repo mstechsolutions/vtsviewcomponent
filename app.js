@@ -344,7 +344,9 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   $scope.truckStatList = [];
   $scope.calculateTruckSummary = function()
   {
+    var grandTotalExpense = 0;
     $scope.truckStatList = [];
+    
     var orderList = angular.copy($scope.response);
     var tripList = angular.copy($scope.tripLogs);
     
@@ -372,10 +374,15 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
       truckStat.totalOrderAmount = tempTruckOrderAmountTotal;
       truckStat.totalTruckExpense = tempTruckExpenseTotal;
       truckStat.netProfit = tempTruckOrderAmountTotal - tempTruckExpenseTotal;
+      
+      grandTotalExpense = grandTotalExpense + tempTruckExpenseTotal;
       $scope.truckStatList.push(truckStat);
       
     });
 
+    $scope.orderSummary.totalExpense = new Object();
+    $scope.orderSummary.totalExpense.value = grandTotalExpense;
+    $scope.orderSummary.totalExpense.alert=$scope.makeAlertStyle($scope.ALERT_SUCCESS)
     
   }
 

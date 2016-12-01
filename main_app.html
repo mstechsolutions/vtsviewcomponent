@@ -46,6 +46,20 @@
           </div>
         </nav>
 
+        <!-- <div class="input-group col-md-2">
+            <input type="text" class="form-control" placeholder="Recipient's username" aria-describedby="basic-addon2">
+            <div class="input-group-btn">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id=dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Find
+                </button>
+                <div class="dropdown-menu dropdown-content dropdown-menu-right"> 
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+            </div>
+        </div> -->
+
         <div class="panel panel-default" style="margin-left:75px;margin-right:75px">
             <div class="panel-heading">Quick summary</div>
             <div class="panel-body form-inline">
@@ -634,13 +648,32 @@
                                         <span ng-class="col-sm-1" ng-messages="orderForm.customerContact.$error">
                                             <span class="text-danger" ng-message="required">*</span>
                                         </span>
-                                        <div>
+                                        <!-- <div>
                                             <input type="number" class="form-control input-sm" name="customerContact" ng-model="selectedOrder.customerInfo.contactNumber" placeholder="Enter Customer contact number" ng-change="onCustomerContactChange()" ng-required="true" ng-minlength="10" ng-maxlength="10" />
                                             <span ng-messages="orderForm.customerContact.$error">
                                                 <span class="text-danger" ng-message="minlength">[Expected 10 digits exactly]</span>
                                             </span>
+                                        </div> -->
+                                        <div>
+                                            <div class="input-group">
+                                                <input type="number" name="customerContact" class="form-control input-sm" ng-model="selectedOrder.customerInfo.contactNumber" placeholder="Enter Customer contact number" ng-required="true" ng-minlength="10" ng-maxlength="10" aria-describedby="basic-addon2">
+                                                <div class="input-group-btn">
+                                                    <button class="btn btn-secondary dropdown-toggle input-sm" type="button" id=dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="getContactListByPhone('CUSTOMER', selectedOrder.customerInfo.contactNumber)">
+                                                        Find
+                                                    </button>
+                                                    <div class="dropdown-menu dropdown-content dropdown-menu-right"> 
+                                                        <a class="dropdown-item" href="#" ng-repeat="contactInfo in matchedCustomers" ng-click="assignSelectedContactByType('CUSTOMER', contactInfo)">{{ contactInfo.firstName + ', ' 
+                                                        + contactInfo.lastName + ', ' 
+                                                        + contactInfo.city + ', '
+                                                        + contactInfo.state  + ', '
+                                                        + contactInfo.zipCode }}</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span ng-messages="orderForm.customerContact.$error">
+                                                <span class="text-danger" ng-message="minlength">[Expected 10 digits exactly]</span>
+                                            </span>
                                         </div>
-                                        
                                     </div>
 
                                     <div class="form-group col-sm-6 pull-right" ng-class="orderForm.customerEmail.$valid? 'has-success' : ''">
@@ -929,9 +962,30 @@
                                                     <span ng-class="col-sm-1" ng-messages="orderForm.dropoffContact.$error">
                                                         <span class="text-danger" ng-message="required">*</span>
                                                     </span>
-                                                    <div>
+                                                    <!-- <div>
                                                         <input type="number" class="form-control input-sm" name="dropoffContact" ng-model="selectedOrder.dropoffContactInfo.contactNumber" placeholder="Enter contact number" ng-required="addModeEnabled" ng-minlength="addModeEnabled ? 10 : 0" ng-maxlength="10" />
                                                         <span ng-messages="orderForm.dropoffContact.$error">
+                                                            <span class="text-danger" ng-message="minlength">[Expected 10 digits exactly]</span>
+                                                        </span>
+                                                    </div> -->
+
+                                                    <div>
+                                                        <div class="input-group">
+                                                            <input type="number" name="dropoffContact" class="form-control input-sm" ng-model="selectedOrder.dropoffContactInfo.contactNumber" placeholder="Enter contact number" ng-required="addModeEnabled" ng-minlength="addModeEnabled ? 10 : 0"  ng-maxlength="10" aria-describedby="basic-addon2">
+                                                            <div class="input-group-btn">
+                                                                <button class="btn btn-secondary dropdown-toggle input-sm" type="button" id=dropoffDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-click="getContactListByPhone('DROPOFF_CONTACT', selectedOrder.dropoffContactInfo.contactNumber)">
+                                                                    Find
+                                                                </button>
+                                                                <div class="dropdown-menu dropdown-content dropdown-menu-right"> 
+                                                                    <a class="dropdown-item" href="#" ng-repeat="contactInfo in matchedDropoffContacts" ng-click="assignSelectedContactByType('DROPOFF_CONTACT', contactInfo)">{{ contactInfo.firstName + ', ' 
+                                                                    + contactInfo.lastName + ', ' 
+                                                                    + contactInfo.city + ', '
+                                                                    + contactInfo.state  + ', '
+                                                                    + contactInfo.zipCode }}</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <span ng-messages="orderForm.customerContact.$error">
                                                             <span class="text-danger" ng-message="minlength">[Expected 10 digits exactly]</span>
                                                         </span>
                                                     </div>

@@ -187,6 +187,24 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     }
   }
 
+  $scope.getContactListByPhone = function(contactType, phoneNumber)
+  {
+    var queryParameters = new Object();
+    queryParameters.phoneNumber=phoneNumber;
+    $scope.getContacts(contactType, queryParameters);
+  }
+
+  $scope.assignSelectedContactByType = function(contactType, contactInfo)
+  {
+    if(contactType == "CUSTOMER")
+    {
+      $scope.selectedOrder.customerInfo = contactInfo;
+    }
+    if(contactType == "DROPOFF_CONTACT")
+    {
+      $scope.selectedOrder.dropoffContactInfo = contactInfo;
+    }
+  }
 
   /*
   Trips
@@ -750,6 +768,42 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
         console.log("success")
         console.log("trips data", response.data)
         $scope.tripLogs = response.data;
+      },
+      function error(response){
+        console.log(response)
+        $scope.error = response;
+      }
+    );  
+  }
+
+  $scope.matchedCustomers = null;
+  $scope.matchedDropoffContacts = null;
+  $scope.getContacts = function(contactType, queryParameters)
+  {
+    $http({
+      method: "GET",
+      url: $scope.baseServiceUrl.concat("truck/orders/customer"),
+      headers: {
+        "Content-Type" : "application/json",
+        "Accept" : "application/json"
+      },
+      params:queryParameters
+    })
+    .then(
+      function success(response){
+        console.log("success")
+        
+        if(contactType == 'CUSTOMER')
+        {
+          $scope.matchedCustomers = response.data;
+          console.log("matched customers data", $scope.matchedCustomers)
+        }
+        else if(contactType == "DROPOFF_CONTACT")
+        {
+          $scope.matchedDropoffContacts = response.data;
+          console.log("matched customers data", $scope.matchedDropoffContacts)
+        }
+
       },
       function error(response){
         console.log(response)

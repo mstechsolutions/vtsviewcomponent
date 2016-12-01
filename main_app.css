@@ -1,6 +1,13 @@
 
 /* .row.content {height: 500px;} */
 
+.dropdown-content a {
+    color: black;
+    padding: 5px 5px 5px 10px;
+    text-decoration: none;
+    display: block;
+}
+
 ul.list-group:after {
   clear: both;
   display: block;
@@ -13,6 +20,13 @@ ul.list-group:after {
     margin-right: 5px;
     min-width: 250px;
 }
+
+/* .dropdown {
+  position: inherit;
+}
+.dropdown-menu {
+   top:40px;
+} */
 
 
 .alertBox {

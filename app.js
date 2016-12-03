@@ -62,6 +62,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   $scope.gridHeaders = [
     "Order ID",
+    "Reference Order ID",
     "Truck name",
     "Customer name",
     "Customer phone",

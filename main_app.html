@@ -392,6 +392,7 @@
                                         </input>
                                     </td> -->
                                     <td>{{ order.orderId }}</td>
+                                    <td>{{ order.referenceOrderId }}</td>
                                     <td>{{ order.truckName }}</td>
                                     <td>{{ order.customerInfo.firstName }}</td>
                                     <td>{{ order.customerInfo.contactNumber }}</td>
@@ -414,8 +415,12 @@
                                 </div>
                                 <div class="row detailBox" style="border-top-style:solid">
                                     <label class="col-sm-6 detailBoxCell" >Order Id</label>
-                                    <label class="col-sm-6 detailBoxCellValue" >{{selectedOrder.orderId}}</
-                                    </label>
+                                    <label class="col-sm-6 detailBoxCellValue" >{{selectedOrder.orderId}}</label>
+                                </div>
+                                <div class="row detailBox">
+                                 <label class="col-sm-6 detailBoxCell" >Reference Order Id</label>
+                                    <label class="col-sm-6 detailBoxCellValue" >{{selectedOrder.referenceOrderId}}</label>
+                                
                                 </div>
                                 <div class="row detailBox">
                                     <label class="col-sm-4 detailBoxCell" >Order status</label>

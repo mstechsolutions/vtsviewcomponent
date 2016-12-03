@@ -338,7 +338,9 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   //   console.log("selected truck filter id is "  + $scope.selectedTruckFilter);
   // });
   
-  $scope.orderEndDateFilter = new Date();
+  $scope.orderEndDateFilter = new Date(new Date());
+  $scope.orderEndDateFilter.setMonth($scope.orderEndDateFilter.getMonth() + 1)
+  $scope.orderEndDateFilter.setDate(0);
   $scope.orderStartDateFilter = $scope.getStartDateOfMonth(new Date());
   $scope.orderStartDateFilter.setTime( $scope.orderStartDateFilter.getTime() - $scope.orderStartDateFilter.getTimezoneOffset()*60*1000 );
   $scope.filterByDateRange = function()

@@ -35,8 +35,8 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
 
   $scope.selectedOrder=null;
 
-  $scope.baseServiceUrl="http://localhost:8080/vts-core/";
-  // $scope.baseServiceUrl="http://lowcost-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
+  //$scope.baseServiceUrl="http://localhost:8080/vts-core/";
+  $scope.baseServiceUrl="http://custom-env.qywbriqueg.us-east-1.elasticbeanstalk.com/";
 
   $scope.truckSummaryHeaders = [
     "Truck Name",
@@ -53,10 +53,11 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
     "End date",
     "Starting miles",
     "Ending miles",
-    "Gas expense",
-    "Toll expense",
-    "Maintenance expense",
-    "Misc expense"
+    "Gas Expense",
+    "Toll Expense",
+    "Maintenance Expense",
+    "Payroll Expense",
+    "Misc Expense"
   ];
 
   $scope.gridHeaders = [
@@ -83,7 +84,7 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
   ]
 
   $scope.truckListFilter = [
-    {id:0, name: '', display: "All"},
+    {id:"", name: '', display: "All"},
     {id:1, name: 'Truck 1', display: 'Truck 1'},
     {id:2, name: 'Truck 2', display: 'Truck 2'},
     {id:3, name: 'Truck 3', display: 'Truck 3'}

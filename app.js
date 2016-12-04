@@ -383,10 +383,11 @@ app.controller('mainCtrl', ['$scope','$http','$filter', function($scope, $http, 
           tempTruckOrderAmountTotal  = tempTruckOrderAmountTotal + tempOrder.serviceFee;
       });
 
+      var tempTruckExpenseTotal = 0;
       var tempTrips = $filter('filter')(tripList, {truckId : truck.id});
       angular.forEach(tempTrips, function(tempTrip)
       {
-    	 var tempTruckExpenseTotal = 0;
+    	tempTruckExpenseTotal = 0;
         tempTruckExpenseTotal  = tempTruckExpenseTotal + tempTrip.gasExpense + tempTrip.tollExpense + tempTrip.maintenanceExpense + tempTrip.miscExpense + + tempTrip.payrollExpense;
       });
 
